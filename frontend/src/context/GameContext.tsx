@@ -9,6 +9,15 @@ export interface ChatMessage {
   timestamp: Date
 }
 
+export interface QuestionAnswerPair {
+  id: string
+  question: string
+  answer?: string
+  userId: string
+  timestamp: Date
+  isCorrectGuess?: boolean
+}
+
 export interface ConnectedUser {
   id: string
   name: string
@@ -21,6 +30,7 @@ interface GameState {
   connected: boolean
   currentUserId: string
   chatMessages: ChatMessage[]
+  questionAnswerPairs: QuestionAnswerPair[]
   connectedUsers: ConnectedUser[]
   question: string
   gamePhase: 'waiting' | 'playing' | 'round_ending'
@@ -33,6 +43,8 @@ type GameAction =
   | { type: 'SET_SOCKET'; payload: Socket }
   | { type: 'SET_CONNECTION_STATE'; payload: { connected: boolean; userId?: string } }
   | { type: 'ADD_CHAT_MESSAGE'; payload: ChatMessage }
+  | { type: 'ADD_QUESTION'; payload: QuestionAnswerPair }
+  | { type: 'UPDATE_ANSWER'; payload: { questionId: string; answer: string; isCorrectGuess?: boolean } }
   | { type: 'SET_QUESTION'; payload: string }
   | { type: 'SET_CONNECTED_USERS'; payload: ConnectedUser[] }
   | { type: 'SET_GAME_PHASE'; payload: 'waiting' | 'playing' | 'round_ending' }
@@ -44,6 +56,7 @@ const initialState: GameState = {
   connected: false,
   currentUserId: '',
   chatMessages: [],
+  questionAnswerPairs: [],
   connectedUsers: [],
   question: '',
   gamePhase: 'waiting',
@@ -68,6 +81,21 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         chatMessages: [...state.chatMessages, action.payload],
         questionsAsked: action.payload.sender === 'user' ? state.questionsAsked + 1 : state.questionsAsked
       }
+    case 'ADD_QUESTION':
+      return {
+        ...state,
+        questionAnswerPairs: [...state.questionAnswerPairs, action.payload],
+        questionsAsked: state.questionsAsked + 1
+      }
+    case 'UPDATE_ANSWER':
+      return {
+        ...state,
+        questionAnswerPairs: state.questionAnswerPairs.map(pair =>
+          pair.id === action.payload.questionId
+            ? { ...pair, answer: action.payload.answer, isCorrectGuess: action.payload.isCorrectGuess }
+            : pair
+        )
+      }
     case 'SET_QUESTION':
       return { ...state, question: action.payload }
     case 'SET_CONNECTED_USERS':
@@ -80,6 +108,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         currentRound: action.payload.round,
         lastWinner: action.payload.winner,
         questionsAsked: 0,
+        questionAnswerPairs: [], // Clear board for new round
         gamePhase: 'playing'
       }
     case 'INCREMENT_QUESTIONS':
@@ -122,13 +151,30 @@ export function GameProvider({ children }: { children: ReactNode }) {
     })
 
     newSocket.on('test-response', (data: string) => {
-      const newMessage: ChatMessage = {
-        id: Date.now().toString(),
-        text: data,
-        sender: 'ai',
-        timestamp: new Date()
+      // Handle AI responses - could be answer to question or round info
+      if (data.includes('🎉') || data.includes('Round') || data.includes('Welcome')) {
+        // This is a game status message, add to chat
+        const newMessage: ChatMessage = {
+          id: Date.now().toString(),
+          text: data,
+          sender: 'ai',
+          timestamp: new Date()
+        }
+        dispatch({ type: 'ADD_CHAT_MESSAGE', payload: newMessage })
+      } else {
+        // This is an answer to the most recent question
+        const mostRecentQuestion = state.questionAnswerPairs[state.questionAnswerPairs.length - 1]
+        if (mostRecentQuestion && !mostRecentQuestion.answer) {
+          dispatch({ 
+            type: 'UPDATE_ANSWER', 
+            payload: { 
+              questionId: mostRecentQuestion.id, 
+              answer: data,
+              isCorrectGuess: data.includes('🎉')
+            } 
+          })
+        }
       }
-      dispatch({ type: 'ADD_CHAT_MESSAGE', payload: newMessage })
     })
 
     return () => {
@@ -138,14 +184,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const sendQuestion = () => {
     if (state.socket && state.question.trim()) {
-      const userMessage: ChatMessage = {
-        id: Date.now().toString(),
-        text: state.question,
-        sender: 'user',
+      const questionId = Date.now().toString()
+      
+      // Add question to board immediately
+      const questionPair: QuestionAnswerPair = {
+        id: questionId,
+        question: state.question,
         userId: state.currentUserId,
         timestamp: new Date()
       }
-      dispatch({ type: 'ADD_CHAT_MESSAGE', payload: userMessage })
+      dispatch({ type: 'ADD_QUESTION', payload: questionPair })
+      
+      // Send to server and clear input
       state.socket.emit('test-message', state.question)
       dispatch({ type: 'SET_QUESTION', payload: '' })
     }
