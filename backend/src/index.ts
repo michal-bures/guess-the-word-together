@@ -32,17 +32,9 @@ io.on('connection', async (socket) => {
   const roomId = 'main-room';
   socket.join(roomId);
 
-  // Auto-start game if no active session exists or send current state
+  // Send current state or welcome message
   const currentSession = aiService.getGameSession(roomId);
-  if (!currentSession) {
-    try {
-      const gameInfo = await aiService.startNewGame(roomId);
-      io.to(roomId).emit('test-response', `🎮 Welcome! Round ${gameInfo.roundNumber}: I'm thinking of ${gameInfo.category === 'unknown' ? 'something' : `a ${gameInfo.category}`}... Ask yes/no questions to guess what it is!`);
-      console.log(`Auto-started game in ${roomId}: ${gameInfo.word} (${gameInfo.category})`);
-    } catch (error) {
-      console.error('Error auto-starting game:', error);
-    }
-  } else {
+  if (currentSession) {
     // Send current game state to the newly connected user
     socket.emit('game-state-sync', {
       roundNumber: currentSession.roundNumber,
@@ -51,19 +43,18 @@ io.on('connection', async (socket) => {
     });
     
     socket.emit('test-response', `🎮 Welcome back! Round ${currentSession.roundNumber}: I'm thinking of ${currentSession.category === 'unknown' ? 'something' : `a ${currentSession.category}`}...`);
+  } else {
+    // No active game - send welcome message
+    socket.emit('test-response', 'Welcome! Click "New Round" to start playing.');
   }
 
-  // Start a new game when first player joins
+  // Start a new game when requested
   socket.on('start-game', async () => {
     try {
       const gameInfo = await aiService.startNewGame(roomId);
 
-      // Notify all players in the room
-      io.to(roomId).emit('game-started', {
-        roundNumber: gameInfo.roundNumber,
-        category: gameInfo.category,
-        message: `Round ${gameInfo.roundNumber} started! I'm thinking of ${gameInfo.category === 'unknown' ? 'something' : `a ${gameInfo.category}`}...`
-      });
+      // Notify all players in the room with status message
+      io.to(roomId).emit('test-response', `🎮 Round ${gameInfo.roundNumber} started! I'm thinking of ${gameInfo.category === 'unknown' ? 'something' : `a ${gameInfo.category}`}... Ask yes/no questions to guess what it is!`);
 
       console.log(`Game started in ${roomId}: ${gameInfo.word} (${gameInfo.category})`);
     } catch (error) {
@@ -84,16 +75,6 @@ io.on('connection', async (socket) => {
           word: result.explanation,
           message: `🎉 Correct! ${result.explanation}`
         });
-
-        // Start new round automatically after a brief delay
-        setTimeout(async () => {
-          const gameInfo = await aiService.startNewGame(roomId);
-          io.to(roomId).emit('game-started', {
-            roundNumber: gameInfo.roundNumber,
-            category: gameInfo.category,
-            message: `Round ${gameInfo.roundNumber} started! I'm thinking of ${gameInfo.category === 'unknown' ? 'something' : `a ${gameInfo.category}`}...`
-          });
-        }, 3000);
       } else {
         // Normal Q&A response
         io.to(roomId).emit('ai-response', {
@@ -114,13 +95,7 @@ io.on('connection', async (socket) => {
       const result = await aiService.answerQuestion(roomId, message, socket.id);
 
       if (result.isCorrectGuess) {
-        socket.emit('test-response', `🎉 ${result.explanation}! Starting new round...`);
-
-        // Start new round
-        setTimeout(async () => {
-          const gameInfo = await aiService.startNewGame(roomId);
-          io.to(roomId).emit('test-response', `Round ${gameInfo.roundNumber}: I'm thinking of ${gameInfo.category === 'unknown' ? 'something' : `a ${gameInfo.category}`}...`);
-        }, 2000);
+        io.to(roomId).emit('test-response', `🎉 ${result.explanation}! Click "New Round" to play again.`);
       } else {
         socket.emit('test-response', result.answer);
       }

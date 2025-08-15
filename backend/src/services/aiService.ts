@@ -3,6 +3,11 @@ import {capitalize} from "../utils";
 
 const ollama = new Ollama({ host: 'http://localhost:11434' });
 
+function getRandomLetter(): string {
+  const letters = 'abcdefghijklmnopqrstuvwxyz';
+  return letters[Math.floor(Math.random() * letters.length)];
+}
+
 export interface GameSession {
   currentWord: string;
   category: string;
@@ -71,7 +76,7 @@ export class AIService {
       timestamp: new Date(),
       isCorrectGuess: false
     };
-    
+
     session.questions.push(questionData);
 
     return {
@@ -84,7 +89,7 @@ export class AIService {
     const prompt = `Generate a single random word that would be good for a guessing game. 
     Choose something concrete that people can ask yes/no questions about. 
     Examples: car, apple, elephant, guitar, mountain, book.
-    Return only the word, nothing else.`;
+    Return only the word, nothing else. Try to make it around ${Math.floor(Math.random() * 10)} letters long and starting with ${getRandomLetter()}.`;
 
     try {
       const response = await ollama.generate({

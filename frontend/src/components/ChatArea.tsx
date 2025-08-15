@@ -4,27 +4,15 @@ export function ChatArea() {
   const { state } = useGame()
 
   return (
-    <div className="flex-1 overflow-y-auto p-4">
-      {/* Game Status Messages */}
-      {state.chatMessages.length > 0 && (
-        <div className="mb-6 space-y-2">
-          {state.chatMessages.map((msg) => (
-            <div key={msg.id} className="flex justify-center">
-              <div className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm max-w-md text-center">
-                {msg.text}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
+    <div className="flex-1 overflow-y-auto p-4 flex flex-col">
       {/* Question Board */}
       {state.questionAnswerPairs.length === 0 ? (
-        <div className="text-center text-gray-500 mt-8">
+        <div className="text-center text-gray-500 mt-8 mb-auto">
           <p className="text-lg">Ask your first question to start building the board!</p>
           <p className="text-sm">Questions will appear as bubbles with their answers attached.</p>
         </div>
       ) : (
+        <div className="mb-auto">
         <div className="flex flex-wrap gap-3">
           {state.questionAnswerPairs.map((pair) => (
             <div
@@ -54,7 +42,21 @@ export function ChatArea() {
             </div>
           ))}
         </div>
+        </div>
       )}
+
+      {/* Game Status Message - Always at bottom */}
+      <div className="mt-6 flex justify-center">
+        <div className={`px-6 py-3 rounded-full text-center max-w-md ${
+          state.gamePhase === 'won' 
+            ? 'bg-green-100 text-green-800 border border-green-200' 
+            : state.gamePhase === 'playing'
+            ? 'bg-blue-100 text-blue-800 border border-blue-200'
+            : 'bg-gray-100 text-gray-700 border border-gray-200'
+        }`}>
+          {state.statusMessage}
+        </div>
+      </div>
     </div>
   )
 }

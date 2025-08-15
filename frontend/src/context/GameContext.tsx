@@ -29,41 +29,43 @@ interface GameState {
   socket: Socket | null
   connected: boolean
   currentUserId: string
-  chatMessages: ChatMessage[]
   questionAnswerPairs: QuestionAnswerPair[]
   connectedUsers: ConnectedUser[]
   question: string
-  gamePhase: 'waiting' | 'playing' | 'round_ending'
+  gamePhase: 'waiting' | 'playing' | 'won'
   currentRound: number
   questionsAsked: number
+  currentCategory?: string
   lastWinner?: string
+  statusMessage: string
 }
 
 type GameAction =
   | { type: 'SET_SOCKET'; payload: Socket }
   | { type: 'SET_CONNECTION_STATE'; payload: { connected: boolean; userId?: string } }
-  | { type: 'ADD_CHAT_MESSAGE'; payload: ChatMessage }
   | { type: 'ADD_QUESTION'; payload: QuestionAnswerPair }
   | { type: 'UPDATE_ANSWER'; payload: { questionId: string; answer: string; isCorrectGuess?: boolean } }
   | { type: 'SYNC_GAME_STATE'; payload: { roundNumber: number; category: string; questions: QuestionAnswerPair[] } }
   | { type: 'SET_QUESTION'; payload: string }
   | { type: 'SET_CONNECTED_USERS'; payload: ConnectedUser[] }
-  | { type: 'SET_GAME_PHASE'; payload: 'waiting' | 'playing' | 'round_ending' }
-  | { type: 'START_NEW_ROUND'; payload: { round: number; winner?: string } }
-  | { type: 'INCREMENT_QUESTIONS'; payload: never }
+  | { type: 'SET_GAME_PHASE'; payload: 'waiting' | 'playing' | 'won' }
+  | { type: 'START_NEW_ROUND'; payload: { round: number; category: string; statusMessage: string } }
+  | { type: 'GAME_WON'; payload: { winner: string; word: string } }
+  | { type: 'SET_STATUS_MESSAGE'; payload: string }
 
 const initialState: GameState = {
   socket: null,
   connected: false,
   currentUserId: '',
-  chatMessages: [],
   questionAnswerPairs: [],
   connectedUsers: [],
   question: '',
   gamePhase: 'waiting',
   currentRound: 0,
   questionsAsked: 0,
-  lastWinner: undefined
+  currentCategory: undefined,
+  lastWinner: undefined,
+  statusMessage: 'Welcome! Click "New Round" to start playing.'
 }
 
 function gameReducer(state: GameState, action: GameAction): GameState {
@@ -77,12 +79,8 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         connected: action.payload.connected,
         currentUserId: action.payload.userId || ''
       }
-    case 'ADD_CHAT_MESSAGE':
-      return {
-        ...state,
-        chatMessages: [...state.chatMessages, action.payload],
-        questionsAsked: action.payload.sender === 'user' ? state.questionsAsked + 1 : state.questionsAsked
-      }
+    case 'SET_STATUS_MESSAGE':
+      return { ...state, statusMessage: action.payload }
     case 'ADD_QUESTION':
       return {
         ...state,
@@ -116,13 +114,19 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return {
         ...state,
         currentRound: action.payload.round,
-        lastWinner: action.payload.winner,
+        currentCategory: action.payload.category,
+        statusMessage: action.payload.statusMessage,
         questionsAsked: 0,
         questionAnswerPairs: [], // Clear board for new round
         gamePhase: 'playing'
       }
-    case 'INCREMENT_QUESTIONS':
-      return { ...state, questionsAsked: state.questionsAsked + 1 }
+    case 'GAME_WON':
+      return {
+        ...state,
+        gamePhase: 'won',
+        lastWinner: action.payload.winner,
+        statusMessage: `🎉 ${action.payload.winner} won! The word was "${action.payload.word}". Click "New Round" to play again.`
+      }
     default:
       return state
   }
@@ -132,6 +136,7 @@ interface GameContextType {
   state: GameState
   dispatch: React.Dispatch<GameAction>
   sendQuestion: () => void
+  startNewRound: () => void
   formatTime: (date: Date) => string
 }
 
@@ -155,7 +160,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       console.log('Current Round:', currentState.currentRound);
       console.log('Questions Asked:', currentState.questionsAsked);
       console.log('Last Winner:', currentState.lastWinner);
-      console.log('Chat Messages:', currentState.chatMessages);
+      console.log('Status Message:', currentState.statusMessage);
+      console.log('Current Category:', currentState.currentCategory);
       console.log('Q&A Pairs:', currentState.questionAnswerPairs);
       console.log('Connected Users:', currentState.connectedUsers);
       console.groupEnd();
@@ -192,14 +198,26 @@ export function GameProvider({ children }: { children: ReactNode }) {
     newSocket.on('test-response', (data: string) => {
       // Handle AI responses - could be answer to question or round info
       if (data.includes('🎉') || data.includes('Round') || data.includes('Welcome')) {
-        // This is a game status message, add to chat
-        const newMessage: ChatMessage = {
-          id: Date.now().toString(),
-          text: data,
-          sender: 'ai',
-          timestamp: new Date()
+        // This is a game status message
+        dispatch({ type: 'SET_STATUS_MESSAGE', payload: data })
+        
+        if (data.includes('🎉')) {
+          // Game was won - extract winner and word info
+          dispatch({ type: 'SET_GAME_PHASE', payload: 'won' })
+        } else if (data.includes('Round') && data.includes('started')) {
+          // New round started - extract round number and category
+          const roundMatch = data.match(/Round (\d+)/)
+          const categoryMatch = data.match(/thinking of (?:a )?([^.]+)/)
+          
+          dispatch({
+            type: 'START_NEW_ROUND',
+            payload: {
+              round: roundMatch ? parseInt(roundMatch[1]) : 1,
+              category: categoryMatch ? categoryMatch[1].trim() : 'something',
+              statusMessage: data
+            }
+          })
         }
-        dispatch({ type: 'ADD_CHAT_MESSAGE', payload: newMessage })
       } else {
         // This is an answer to the most recent question
         const state = stateRef.current;
@@ -260,6 +278,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const startNewRound = () => {
+    if (state.socket) {
+      state.socket.emit('start-game')
+    }
+  }
+
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
@@ -268,7 +292,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <GameContext.Provider value={{ state, dispatch, sendQuestion, formatTime }}>
+    <GameContext.Provider value={{ state, dispatch, sendQuestion, startNewRound, formatTime }}>
       {children}
     </GameContext.Provider>
   )
