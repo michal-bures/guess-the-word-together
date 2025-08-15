@@ -48,8 +48,23 @@ export function PlayersSidebar() {
       <div className="p-4 border-t border-gray-200 bg-gray-50">
         <div className="text-center">
           <p className="text-sm font-medium text-gray-900">Game Status</p>
-          <p className="text-xs text-gray-600">Waiting for word...</p>
-          <p className="text-xs text-gray-400 mt-1">Questions asked: {state.chatMessages.filter(m => m.sender === 'user').length}</p>
+          <div className="space-y-1">
+            {state.gamePhase === 'waiting' && (
+              <p className="text-xs text-gray-600">Waiting to start...</p>
+            )}
+            {state.gamePhase === 'playing' && (
+              <>
+                <p className="text-xs text-green-600">Round {state.currentRound} - Playing!</p>
+                <p className="text-xs text-gray-400">Questions asked: {state.questionsAsked}</p>
+              </>
+            )}
+            {state.gamePhase === 'round_ending' && (
+              <p className="text-xs text-blue-600">Round ending...</p>
+            )}
+            {state.lastWinner && (
+              <p className="text-xs text-purple-600">Last winner: {state.lastWinner}</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
