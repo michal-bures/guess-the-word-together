@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useReducer, useEffect, useRef, type ReactNode } from 'react'
 import { io, Socket } from 'socket.io-client'
 
 export interface ChatMessage {
@@ -140,6 +140,35 @@ const GameContext = createContext<GameContextType | undefined>(undefined)
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialState)
 
+  // Create a ref to store the current state for debugging
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
+  // Expose game state to global scope for debugging (only setup once)
+  useEffect(() => {
+    (window as any).dumpGameState = () => {
+      const currentState = stateRef.current;
+      console.group('🎮 Game State Debug');
+      console.log('Full State:', currentState);
+      console.log('Connection:', { connected: currentState.connected, userId: currentState.currentUserId });
+      console.log('Game Phase:', currentState.gamePhase);
+      console.log('Current Round:', currentState.currentRound);
+      console.log('Questions Asked:', currentState.questionsAsked);
+      console.log('Last Winner:', currentState.lastWinner);
+      console.log('Chat Messages:', currentState.chatMessages);
+      console.log('Q&A Pairs:', currentState.questionAnswerPairs);
+      console.log('Connected Users:', currentState.connectedUsers);
+      console.groupEnd();
+      return currentState;
+    };
+
+    // Also provide direct access to current state
+    Object.defineProperty(window, 'gameState', {
+      get: () => stateRef.current,
+      configurable: true
+    });
+  }, []); // Empty dependency array - only runs once
+
   useEffect(() => {
     const newSocket = io('http://localhost:3001')
     dispatch({ type: 'SET_SOCKET', payload: newSocket })
@@ -173,6 +202,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         dispatch({ type: 'ADD_CHAT_MESSAGE', payload: newMessage })
       } else {
         // This is an answer to the most recent question
+        const state = stateRef.current;
         const mostRecentQuestion = state.questionAnswerPairs[state.questionAnswerPairs.length - 1]
         if (mostRecentQuestion && !mostRecentQuestion.answer) {
           dispatch({
