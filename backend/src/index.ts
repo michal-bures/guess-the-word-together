@@ -3,8 +3,6 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import WebSocket, { WebSocketServer } from 'ws';
-import { setupWSConnection } from 'y-websocket/bin/utils';
-
 const app = express();
 const server = createServer(app);
 
@@ -27,7 +25,7 @@ const io = new Server(server, {
 const PORT = process.env.PORT || 3001;
 
 io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
+  console.log('User connected:', socket.id, 'Total users:', io.engine.clientsCount);
 
   socket.on('test-message', (message: string) => {
     console.log('Received test message:', message);
@@ -35,7 +33,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+    console.log('User disconnected:', socket.id, 'Total users:', io.engine.clientsCount);
   });
 });
 
@@ -43,7 +41,7 @@ io.on('connection', (socket) => {
 const wss = new WebSocketServer({ port: 1234 });
 
 wss.on('connection', (ws, req) => {
-  setupWSConnection(ws, req);
+  //TODO
 });
 
 server.listen(PORT, () => {

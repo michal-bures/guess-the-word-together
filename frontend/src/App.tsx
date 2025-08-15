@@ -30,7 +30,7 @@ function App() {
 
     newSocket.on('connect', () => {
       setConnected(true)
-      setCurrentUserId(newSocket.id)
+      setCurrentUserId(newSocket.id!)
       console.log('Connected to server')
     })
 
@@ -70,9 +70,9 @@ function App() {
   }
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
     })
   }
 
@@ -154,7 +154,7 @@ function App() {
         <div className="p-4 border-b border-gray-200 h-16 flex items-center">
           <h2 className="text-lg font-semibold text-gray-900">Players Online</h2>
         </div>
-        
+
         <div className="flex-1 p-4 space-y-4">
           {connectedUsers.length === 0 ? (
             <div className="text-center text-gray-500 mt-8">
@@ -168,7 +168,7 @@ function App() {
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
                   {user.name.charAt(0).toUpperCase()}
                 </div>
-                
+
                 {/* Typing Indicator */}
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-900">{user.name}</p>
