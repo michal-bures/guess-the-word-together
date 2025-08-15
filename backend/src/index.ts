@@ -32,7 +32,7 @@ io.on('connection', async (socket) => {
   const roomId = 'main-room';
   socket.join(roomId);
 
-  // Auto-start game if no active session exists
+  // Auto-start game if no active session exists or send current state
   const currentSession = aiService.getGameSession(roomId);
   if (!currentSession) {
     try {
@@ -42,6 +42,15 @@ io.on('connection', async (socket) => {
     } catch (error) {
       console.error('Error auto-starting game:', error);
     }
+  } else {
+    // Send current game state to the newly connected user
+    socket.emit('game-state-sync', {
+      roundNumber: currentSession.roundNumber,
+      category: currentSession.category,
+      questions: currentSession.questions
+    });
+    
+    socket.emit('test-response', `🎮 Welcome back! Round ${currentSession.roundNumber}: I'm thinking of ${currentSession.category === 'unknown' ? 'something' : `a ${currentSession.category}`}...`);
   }
 
   // Start a new game when first player joins

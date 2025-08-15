@@ -7,6 +7,14 @@ export interface GameSession {
   currentWord: string;
   category: string;
   roundNumber: number;
+  questions: Array<{
+    id: string;
+    question: string;
+    answer: string;
+    userId: string;
+    timestamp: Date;
+    isCorrectGuess?: boolean;
+  }>;
 }
 
 export class AIService {
@@ -22,7 +30,8 @@ export class AIService {
     this.sessions.set(roomId, {
       currentWord: word,
       category: category,
-      roundNumber: roundNumber
+      roundNumber: roundNumber,
+      questions: []
     });
 
     return { word, category, roundNumber };
@@ -52,6 +61,18 @@ export class AIService {
 
     // Use AI to answer the question
     const answer = await this.askAI(question, currentWord);
+
+    // Store the Q&A in session
+    const questionData = {
+      id: Date.now().toString(),
+      question: question,
+      answer: answer,
+      userId: playerId,
+      timestamp: new Date(),
+      isCorrectGuess: false
+    };
+    
+    session.questions.push(questionData);
 
     return {
       answer: answer,

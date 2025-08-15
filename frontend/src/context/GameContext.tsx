@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react'
 import { io, Socket } from 'socket.io-client'
 
 export interface ChatMessage {
@@ -45,6 +45,7 @@ type GameAction =
   | { type: 'ADD_CHAT_MESSAGE'; payload: ChatMessage }
   | { type: 'ADD_QUESTION'; payload: QuestionAnswerPair }
   | { type: 'UPDATE_ANSWER'; payload: { questionId: string; answer: string; isCorrectGuess?: boolean } }
+  | { type: 'SYNC_GAME_STATE'; payload: { roundNumber: number; category: string; questions: QuestionAnswerPair[] } }
   | { type: 'SET_QUESTION'; payload: string }
   | { type: 'SET_CONNECTED_USERS'; payload: ConnectedUser[] }
   | { type: 'SET_GAME_PHASE'; payload: 'waiting' | 'playing' | 'round_ending' }
@@ -66,18 +67,19 @@ const initialState: GameState = {
 }
 
 function gameReducer(state: GameState, action: GameAction): GameState {
+  console.log('[Action]', action.type, action.payload)
   switch (action.type) {
     case 'SET_SOCKET':
       return { ...state, socket: action.payload }
     case 'SET_CONNECTION_STATE':
-      return { 
-        ...state, 
+      return {
+        ...state,
         connected: action.payload.connected,
         currentUserId: action.payload.userId || ''
       }
     case 'ADD_CHAT_MESSAGE':
-      return { 
-        ...state, 
+      return {
+        ...state,
         chatMessages: [...state.chatMessages, action.payload],
         questionsAsked: action.payload.sender === 'user' ? state.questionsAsked + 1 : state.questionsAsked
       }
@@ -96,6 +98,14 @@ function gameReducer(state: GameState, action: GameAction): GameState {
             : pair
         )
       }
+    case 'SYNC_GAME_STATE':
+      return {
+        ...state,
+        currentRound: action.payload.roundNumber,
+        questionAnswerPairs: action.payload.questions,
+        questionsAsked: action.payload.questions.length,
+        gamePhase: 'playing'
+      }
     case 'SET_QUESTION':
       return { ...state, question: action.payload }
     case 'SET_CONNECTED_USERS':
@@ -103,8 +113,8 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     case 'SET_GAME_PHASE':
       return { ...state, gamePhase: action.payload }
     case 'START_NEW_ROUND':
-      return { 
-        ...state, 
+      return {
+        ...state,
         currentRound: action.payload.round,
         lastWinner: action.payload.winner,
         questionsAsked: 0,
@@ -135,17 +145,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_SOCKET', payload: newSocket })
 
     newSocket.on('connect', () => {
-      dispatch({ 
-        type: 'SET_CONNECTION_STATE', 
-        payload: { connected: true, userId: newSocket.id! } 
+      dispatch({
+        type: 'SET_CONNECTION_STATE',
+        payload: { connected: true, userId: newSocket.id! }
       })
       console.log('Connected to server')
     })
 
     newSocket.on('disconnect', () => {
-      dispatch({ 
-        type: 'SET_CONNECTION_STATE', 
-        payload: { connected: false, userId: '' } 
+      dispatch({
+        type: 'SET_CONNECTION_STATE',
+        payload: { connected: false, userId: '' }
       })
       console.log('Disconnected from server')
     })
@@ -165,16 +175,35 @@ export function GameProvider({ children }: { children: ReactNode }) {
         // This is an answer to the most recent question
         const mostRecentQuestion = state.questionAnswerPairs[state.questionAnswerPairs.length - 1]
         if (mostRecentQuestion && !mostRecentQuestion.answer) {
-          dispatch({ 
-            type: 'UPDATE_ANSWER', 
-            payload: { 
-              questionId: mostRecentQuestion.id, 
+          dispatch({
+            type: 'UPDATE_ANSWER',
+            payload: {
+              questionId: mostRecentQuestion.id,
               answer: data,
               isCorrectGuess: data.includes('🎉')
-            } 
+            }
           })
         }
       }
+    })
+
+    newSocket.on('game-state-sync', (data: { roundNumber: number; category: string; questions: any[] }) => {
+      console.log('Syncing game state:', data);
+      dispatch({
+        type: 'SYNC_GAME_STATE',
+        payload: {
+          roundNumber: data.roundNumber,
+          category: data.category,
+          questions: data.questions.map(q => ({
+            id: q.id,
+            question: q.question,
+            answer: q.answer,
+            userId: q.userId,
+            timestamp: new Date(q.timestamp),
+            isCorrectGuess: q.isCorrectGuess
+          }))
+        }
+      });
     })
 
     return () => {
@@ -185,7 +214,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const sendQuestion = () => {
     if (state.socket && state.question.trim()) {
       const questionId = Date.now().toString()
-      
+
       // Add question to board immediately
       const questionPair: QuestionAnswerPair = {
         id: questionId,
@@ -194,7 +223,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         timestamp: new Date()
       }
       dispatch({ type: 'ADD_QUESTION', payload: questionPair })
-      
+
       // Send to server and clear input
       state.socket.emit('test-message', state.question)
       dispatch({ type: 'SET_QUESTION', payload: '' })

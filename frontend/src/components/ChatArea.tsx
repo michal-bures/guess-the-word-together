@@ -1,7 +1,7 @@
 import { useGame } from '../context/GameContext'
 
 export function ChatArea() {
-  const { state, formatTime } = useGame()
+  const { state } = useGame()
 
   return (
     <div className="flex-1 overflow-y-auto p-4">
@@ -25,17 +25,17 @@ export function ChatArea() {
           <p className="text-sm">Questions will appear as bubbles with their answers attached.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        <div className="flex flex-wrap gap-3">
           {state.questionAnswerPairs.map((pair) => (
             <div
               key={pair.id}
-              className="relative bg-blue-500 text-white p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+              className="relative bg-blue-500 text-white p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow flex-shrink-0 max-w-xs min-w-fit"
             >
               {/* Question Text */}
               <p className="text-sm font-medium leading-tight mb-2">
                 {pair.question}
               </p>
-              
+
               {/* Answer Chip */}
               {pair.answer ? (
                 <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
@@ -51,11 +51,6 @@ export function ChatArea() {
                   thinking...
                 </div>
               )}
-
-              {/* Timestamp */}
-              <div className="absolute top-1 right-1 text-xs text-blue-200">
-                {formatTime(pair.timestamp)}
-              </div>
             </div>
           ))}
         </div>
