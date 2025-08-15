@@ -31,7 +31,7 @@ export function ChatArea() {
                     ? 'bg-green-100 text-green-800 border border-green-200'
                     : 'bg-white text-gray-700 border border-gray-200'
                 }`}>
-                  {pair.answer}
+                  {pair.isCorrectGuess ? '🎉 Correct!' : pair.answer}
                 </div>
               ) : (
                 <div className="absolute -bottom-4 right-2 inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-400 text-blue-100 shadow-sm">

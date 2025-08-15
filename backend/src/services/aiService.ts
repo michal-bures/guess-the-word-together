@@ -1,11 +1,23 @@
 import { Ollama } from 'ollama';
-import {capitalize} from "../utils";
+import { capitalize } from "../utils";
+import * as fs from 'fs';
+import * as path from 'path';
 
 const ollama = new Ollama({ host: 'http://localhost:11434' });
 
-function getRandomLetter(): string {
-  const letters = 'abcdefghijklmnopqrstuvwxyz';
-  return letters[Math.floor(Math.random() * letters.length)];
+// Load word list from file
+let wordList: string[] = [];
+try {
+  const wordListPath = path.join(__dirname, '../../data/word-list.txt');
+  const wordListContent = fs.readFileSync(wordListPath, 'utf8');
+  wordList = wordListContent.split(/\s+/).filter(word => word.length > 0);
+  console.log(`Loaded ${wordList.length} words from word list`);
+} catch (error) {
+  console.error('Failed to load word list, using fallback words:', error);
+  wordList = [
+    'apple', 'car', 'book', 'tree', 'phone', 'cat', 'house', 'guitar',
+    'ocean', 'mountain', 'flower', 'pizza', 'bicycle', 'cloud', 'rainbow'
+  ];
 }
 
 export interface GameSession {
@@ -86,28 +98,11 @@ export class AIService {
   }
 
   private async pickRandomWord(): Promise<string> {
-    const prompt = `Generate a single random word that would be good for a guessing game. 
-    Choose something concrete that people can ask yes/no questions about. 
-    Examples: car, apple, elephant, guitar, mountain, book.
-    Return only the word, nothing else. Try to make it around ${Math.floor(Math.random() * 10)} letters long and starting with ${getRandomLetter()}.`;
-
-    try {
-      const response = await ollama.generate({
-        model: 'llama3.2:3b',
-        prompt: prompt,
-        stream: false
-      });
-
-      return response.response.trim().toLowerCase();
-    } catch (error) {
-      console.log('Ollama not available, using fallback words');
-      // Fallback word list if Ollama isn't available
-      const fallbackWords = [
-        'apple', 'car', 'book', 'tree', 'phone', 'cat', 'house', 'guitar',
-        'ocean', 'mountain', 'flower', 'pizza', 'bicycle', 'cloud', 'rainbow'
-      ];
-      return fallbackWords[Math.floor(Math.random() * fallbackWords.length)];
-    }
+    // Pick a random word from the loaded word list
+    const randomIndex = Math.floor(Math.random() * wordList.length);
+    const selectedWord = wordList[randomIndex];
+    console.log(`Selected word: ${selectedWord} (${randomIndex + 1}/${wordList.length})`);
+    return selectedWord;
   }
 
   private async categorizeWord(word: string): Promise<string> {

@@ -41,11 +41,11 @@ io.on('connection', async (socket) => {
       category: currentSession.category,
       questions: currentSession.questions
     });
-    
-    socket.emit('test-response', `🎮 Welcome back! Round ${currentSession.roundNumber}: I'm thinking of ${currentSession.category === 'unknown' ? 'something' : `a ${currentSession.category}`}...`);
+
+    socket.emit('status-message', `Welcome back! Round ${currentSession.roundNumber}: Category: ${currentSession.category}`);
   } else {
     // No active game - send welcome message
-    socket.emit('test-response', 'Welcome! Click "New Round" to start playing.');
+    socket.emit('status-message', 'Welcome! Click "New Round" to start playing.');
   }
 
   // Start a new game when requested
@@ -53,8 +53,12 @@ io.on('connection', async (socket) => {
     try {
       const gameInfo = await aiService.startNewGame(roomId);
 
-      // Notify all players in the room with status message
-      io.to(roomId).emit('test-response', `🎮 Round ${gameInfo.roundNumber} started! I'm thinking of ${gameInfo.category === 'unknown' ? 'something' : `a ${gameInfo.category}`}... Ask yes/no questions to guess what it is!`);
+      // Notify all players of new round
+      io.to(roomId).emit('round-started', {
+        round: gameInfo.roundNumber,
+        category: gameInfo.category,
+        message: `🎮 Round ${gameInfo.roundNumber} started! I'm thinking of ${gameInfo.category === 'unknown' ? 'something' : `a ${gameInfo.category}`}... Ask yes/no questions to guess what it is!`
+      });
 
       console.log(`Game started in ${roomId}: ${gameInfo.word} (${gameInfo.category})`);
     } catch (error) {
@@ -63,45 +67,39 @@ io.on('connection', async (socket) => {
     }
   });
 
-  // Handle questions from players
-  socket.on('ask-question', async (data: { question: string }) => {
+  // Handle question with proper ID tracking
+  socket.on('ask-question', async (data: { questionId: string, question: string }) => {
     try {
       const result = await aiService.answerQuestion(roomId, data.question, socket.id);
 
       if (result.isCorrectGuess) {
-        // Someone guessed correctly!
-        io.to(roomId).emit('correct-guess', {
+        // Send answer to the specific question first
+        socket.emit('question-answered', {
+          questionId: data.questionId,
+          answer: `🎉 ${result.explanation}!`,
+          isCorrectGuess: true
+        });
+
+        // Then notify everyone of the win
+        io.to(roomId).emit('game-won', {
           winner: socket.id,
           word: result.explanation,
-          message: `🎉 Correct! ${result.explanation}`
+          message: `🎉 ${result.explanation}! Click "New Round" to play again.`
         });
       } else {
-        // Normal Q&A response
-        io.to(roomId).emit('ai-response', {
+        socket.emit('question-answered', {
+          questionId: data.questionId,
           answer: result.answer,
-          originalQuestion: data.question,
-          playerId: socket.id
+          isCorrectGuess: false
         });
-      }
-    } catch (error) {
-      console.error('Error processing question:', error);
-      socket.emit('error', { message: 'Failed to process question' });
-    }
-  });
-
-  // Legacy support for the current frontend
-  socket.on('test-message', async (message: string) => {
-    try {
-      const result = await aiService.answerQuestion(roomId, message, socket.id);
-
-      if (result.isCorrectGuess) {
-        io.to(roomId).emit('test-response', `🎉 ${result.explanation}! Click "New Round" to play again.`);
-      } else {
-        socket.emit('test-response', result.answer);
       }
     } catch (error) {
       console.error('Error:', error);
-      socket.emit('test-response', 'Sorry, something went wrong. Try again!');
+      socket.emit('question-answered', {
+        questionId: data.questionId,
+        answer: 'Sorry, something went wrong. Try again!',
+        isCorrectGuess: false
+      });
     }
   });
 

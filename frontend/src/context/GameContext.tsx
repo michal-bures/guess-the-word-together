@@ -195,43 +195,55 @@ export function GameProvider({ children }: { children: ReactNode }) {
       console.log('Disconnected from server')
     })
 
+    // Handle status messages
+    newSocket.on('status-message', (message: string) => {
+      dispatch({ type: 'SET_STATUS_MESSAGE', payload: message })
+    })
+
+    // Handle new round starting
+    newSocket.on('round-started', (data: { round: number; category: string; message: string }) => {
+      dispatch({
+        type: 'START_NEW_ROUND',
+        payload: {
+          round: data.round,
+          category: data.category,
+          statusMessage: data.message
+        }
+      })
+    })
+
+    // Handle question answers
+    newSocket.on('question-answered', (data: { questionId: string; answer: string; isCorrectGuess: boolean }) => {
+      dispatch({
+        type: 'UPDATE_ANSWER',
+        payload: {
+          questionId: data.questionId,
+          answer: data.answer,
+          isCorrectGuess: data.isCorrectGuess
+        }
+      })
+    })
+
+    // Handle game won
+    newSocket.on('game-won', (data: { winner: string; word: string; message: string }) => {
+      dispatch({ type: 'SET_GAME_PHASE', payload: 'won' })
+      dispatch({ type: 'SET_STATUS_MESSAGE', payload: data.message })
+    })
+
+    // Legacy support for test-response
     newSocket.on('test-response', (data: string) => {
-      // Handle AI responses - could be answer to question or round info
-      if (data.includes('🎉') || data.includes('Round') || data.includes('Welcome')) {
-        // This is a game status message
-        dispatch({ type: 'SET_STATUS_MESSAGE', payload: data })
-        
-        if (data.includes('🎉')) {
-          // Game was won - extract winner and word info
-          dispatch({ type: 'SET_GAME_PHASE', payload: 'won' })
-        } else if (data.includes('Round') && data.includes('started')) {
-          // New round started - extract round number and category
-          const roundMatch = data.match(/Round (\d+)/)
-          const categoryMatch = data.match(/thinking of (?:a )?([^.]+)/)
-          
-          dispatch({
-            type: 'START_NEW_ROUND',
-            payload: {
-              round: roundMatch ? parseInt(roundMatch[1]) : 1,
-              category: categoryMatch ? categoryMatch[1].trim() : 'something',
-              statusMessage: data
-            }
-          })
-        }
-      } else {
-        // This is an answer to the most recent question
-        const state = stateRef.current;
-        const mostRecentQuestion = state.questionAnswerPairs[state.questionAnswerPairs.length - 1]
-        if (mostRecentQuestion && !mostRecentQuestion.answer) {
-          dispatch({
-            type: 'UPDATE_ANSWER',
-            payload: {
-              questionId: mostRecentQuestion.id,
-              answer: data,
-              isCorrectGuess: data.includes('🎉')
-            }
-          })
-        }
+      // For now, treat all test-response as answers to the most recent question
+      const state = stateRef.current;
+      const mostRecentQuestion = state.questionAnswerPairs[state.questionAnswerPairs.length - 1]
+      if (mostRecentQuestion && !mostRecentQuestion.answer) {
+        dispatch({
+          type: 'UPDATE_ANSWER',
+          payload: {
+            questionId: mostRecentQuestion.id,
+            answer: data,
+            isCorrectGuess: data.includes('🎉')
+          }
+        })
       }
     })
 
@@ -272,8 +284,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
       dispatch({ type: 'ADD_QUESTION', payload: questionPair })
 
-      // Send to server and clear input
-      state.socket.emit('test-message', state.question)
+      // Send to server with proper event and ID tracking
+      state.socket.emit('ask-question', {
+        questionId: questionId,
+        question: state.question
+      })
+
       dispatch({ type: 'SET_QUESTION', payload: '' })
     }
   }
