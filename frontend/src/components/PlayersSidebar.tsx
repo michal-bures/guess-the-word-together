@@ -5,8 +5,12 @@ export function PlayersSidebar() {
 
   return (
     <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
-      <div className="p-4 border-b border-gray-200 h-16 flex items-center">
+      <div className="p-4 border-b border-gray-200 h-16 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">Players Online</h2>
+              <div className="flex items-center">
+                <div className={`w-2 h-2 rounded-full mr-2 ${state.connected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                  {state.connected ? 'Connected' : 'Disconnected'}
+              </div>
       </div>
 
       <div className="flex-1 p-4 space-y-4">
