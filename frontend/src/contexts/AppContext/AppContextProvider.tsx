@@ -17,6 +17,7 @@ const initialState: AppState = {
     connectedUsers: []
 }
 
+
 export function GameProvider({children}: { children: ReactNode }) {
     const [state, dispatch] = useReducer(reducer, initialState)
 
@@ -79,15 +80,16 @@ export function GameProvider({children}: { children: ReactNode }) {
 
     const sendQuestion = () => {
         if (state.socket && state.questionInput.trim()) {
+            const sanitizedQuestion = sanitizeQuestion(state.questionInput)
             const questionId = crypto.randomUUID()
             dispatch(Actions.addQuestion({
                 id: questionId,
-                question: state.questionInput,
+                question: sanitizedQuestion,
                 userId: state.currentUserId
             }))
             state.socket.emit('ask-question', {
                 questionId: questionId,
-                question: state.questionInput
+                question: sanitizedQuestion
             })
             dispatch(Actions.setQuestionInput(''))
         }
@@ -108,4 +110,17 @@ export function GameProvider({children}: { children: ReactNode }) {
             {children}
         </AppContext.Provider>
     )
+}
+
+function sanitizeQuestion(question: string) {
+    question = question.trim()
+    if (!question.includes(" ")) {
+        //single word
+        question = `Is it ${question}`
+    }
+    if (!question.endsWith("?")) {
+        question += "?"
+    }
+
+    return question
 }

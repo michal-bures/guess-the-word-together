@@ -1,31 +1,28 @@
-import { Ollama } from 'ollama';
-import { capitalize } from "../utils";
+import {Ollama} from 'ollama';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Answer } from 'shared';
+import {Answer} from 'shared';
 
 const ollama = new Ollama({ host: 'http://localhost:11434' });
 
 const LLM_MODEL = 'llama3.2:3b'
 
-// Load word list from file
-let wordList: string[] = [];
-try {
-  const wordListPath = path.join(__dirname, '../../data/word-list.txt');
-  const wordListContent = fs.readFileSync(wordListPath, 'utf8');
-  wordList = wordListContent.split(/\s+/).filter(word => word.length > 0);
-  console.log(`Loaded ${wordList.length} words from word list`);
-} catch (error) {
-  console.error('Failed to load word list, using fallback words:', error);
-  wordList = [
-    'apple', 'car', 'book', 'tree', 'phone', 'cat', 'house', 'guitar',
-    'ocean', 'mountain', 'flower', 'pizza', 'bicycle', 'cloud', 'rainbow'
-  ];
-}
-
 export class WordGameAI {
+  private wordList: string[] | null = null;
+
+  private loadWordList(): string[] {
+    if (this.wordList !== null) {
+      return this.wordList;
+    }
+    const wordListPath = path.join(__dirname, '../../data/word-list.txt');
+    const wordListContent = fs.readFileSync(wordListPath, 'utf8');
+    this.wordList = wordListContent.split(/\s+/).filter(word => word.length > 0);
+    console.log(`Loaded ${this.wordList.length} words from word list`);
+    return this.wordList;
+  }
+
   async pickRandomWord(): Promise<string> {
-    // Pick a random word from the loaded word list
+    const wordList = this.loadWordList();
     const randomIndex = Math.floor(Math.random() * wordList.length);
     const selectedWord = wordList[randomIndex];
     console.log(`Selected word: ${selectedWord} (${randomIndex + 1}/${wordList.length})`);
