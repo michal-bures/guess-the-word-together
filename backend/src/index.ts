@@ -2,8 +2,9 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
-import WebSocket, { WebSocketServer } from 'ws';
+import { WebSocketServer } from 'ws';
 import { aiService } from './services/aiService';
+import type { ClientToServerEvents, ServerToClientEvents } from 'shared';
 const app = express();
 const server = createServer(app);
 
@@ -15,7 +16,7 @@ app.use(cors({
 
 app.use(express.json());
 
-const io = new Server(server, {
+const io = new Server<ClientToServerEvents,ServerToClientEvents>(server, {
   cors: {
     origin: "http://localhost:5173",
     methods: ["GET", "POST"],
@@ -82,8 +83,8 @@ io.on('connection', async (socket) => {
 
         // Then notify everyone of the win
         io.to(roomId).emit('game-won', {
-          winner: socket.id,
-          word: result.explanation,
+          winner: socket.id!,
+          word: result.explanation ?? '',
           message: `🎉 ${result.explanation}! Click "New Round" to play again.`
         });
       } else {

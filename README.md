@@ -34,12 +34,21 @@ Players can see each other typing in real-time and ask yes/no questions to narro
 
 ## 🛠️ Tech Stack
 
+### TODO
+- Setup vitest
+- Build container, setup CI/CD
+- Yjs collaboration with WebSocket
+- Bun for the server
+- MCP API
+- Code splitting & lazy loading
+-
+
 ### Interesting feature
 - monorepo using npm workspaces
 
 Static typing:
 - [Typesafe action definitions](./frontend/src/context/actions.ts)
-- [Typesafe socket events]()
+- [Typesafe websocket events protocol between frontend and backend]()
 
 
 ### Bundler
@@ -88,12 +97,7 @@ Alternatives:
 ### Frontend/Backend Communication
 - shared TS interfaces in the `shared` package (TODO)
 
-### Things to try out next
-- Yjs collaboration with WebSocket
-- Bun for the server
-- MCP API
-- Code splitting & lazy loading
-- 
+
 
 ### Architecture
 

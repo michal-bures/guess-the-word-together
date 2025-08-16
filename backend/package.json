@@ -19,6 +19,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
     "ollama": "^0.5.10",
+    "shared": "file:../shared",
     "socket.io": "^4.8.1",
     "ws": "^8.18.3",
     "y-websocket": "^2.0.4",

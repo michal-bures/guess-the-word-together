@@ -1,8 +1,9 @@
 import {createContext, type ReactNode, useContext, useEffect, useReducer, useRef} from 'react'
 import {io} from 'socket.io-client'
 import {rootReducer} from "./rootReducer.tsx";
-import type {GameState, QuestionAnswerPair, TypedSocket} from "./types.ts";
+import type {GameState, TypedSocket} from "./types.ts";
 import {type Action, Actions} from "./actions.tsx";
+import type { QuestionAnswerPair } from 'shared';
 
 const initialState: GameState = {
   socket: null,

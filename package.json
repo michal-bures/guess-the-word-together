@@ -1,7 +1,7 @@
 {
-  "name": "guess-the-word-together",
+  "name": "guess-the-word",
   "version": "1.0.0",
-  "description": "Collaborative word guessing game with real-time multiplayer",
+  "description": "Collaborative word guessing game.",
   "private": true,
   "workspaces": [
     "frontend",
@@ -9,7 +9,8 @@
     "shared"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev": "concurrently \"npm run dev:shared\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:shared": "cd shared && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && npm run dev",
     "build": "npm run build:shared && npm run build:frontend && npm run build:backend",

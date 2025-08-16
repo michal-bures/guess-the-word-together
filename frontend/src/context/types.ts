@@ -1,5 +1,5 @@
 import type {Socket} from "socket.io-client";
-import type {ClientToServerEvents, ServerToClientEvents} from "./socket-types.ts";
+import type {ClientToServerEvents, QuestionAnswerPair, ServerToClientEvents} from "shared";
 
 export type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
@@ -9,15 +9,6 @@ export interface ChatMessage {
     sender: 'user' | 'ai'
     userId?: string
     timestamp: Date
-}
-
-export interface QuestionAnswerPair {
-    id: string
-    question: string
-    answer?: string
-    userId: string
-    timestamp: Date
-    isCorrectGuess?: boolean
 }
 
 export interface ConnectedUser {

@@ -1,5 +1,8 @@
-import type {ConnectedUser, QuestionAnswerPair, TypedSocket} from "./types.ts";
+import type { QuestionAnswerPair } from "shared";
+import type {ConnectedUser, TypedSocket} from "./types.ts";
 
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ActionCreatorReturn<T> = T extends (...args: any[]) => infer R ? R : never
 export type Action = ActionCreatorReturn<typeof Actions[keyof typeof Actions]>
 

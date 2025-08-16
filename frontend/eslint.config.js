@@ -19,5 +19,18 @@ export default tseslint.config([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/dist/**', '*/dist/**', 'dist/**'],
+              message: 'Direct imports from dist directories are not allowed. Use proper package imports instead.',
+            },
+          ],
+        },
+      ],
+    },
   },
 ])

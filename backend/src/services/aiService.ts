@@ -1,7 +1,9 @@
 import { Ollama } from 'ollama';
 import { capitalize } from "../utils";
+import { GameState } from 'shared';
 import * as fs from 'fs';
 import * as path from 'path';
+import {BackendGameState} from "../types";
 
 const ollama = new Ollama({ host: 'http://localhost:11434' });
 
@@ -20,22 +22,9 @@ try {
   ];
 }
 
-export interface GameSession {
-  currentWord: string;
-  category: string;
-  roundNumber: number;
-  questions: Array<{
-    id: string;
-    question: string;
-    answer: string;
-    userId: string;
-    timestamp: Date;
-    isCorrectGuess?: boolean;
-  }>;
-}
 
 export class AIService {
-  private sessions: Map<string, GameSession> = new Map();
+  private sessions: Map<string, BackendGameState> = new Map();
 
   async startNewGame(roomId: string): Promise<{ word: string; category: string; roundNumber: number }> {
     const word = await this.pickRandomWord();
@@ -45,7 +34,7 @@ export class AIService {
     const roundNumber = currentSession ? currentSession.roundNumber + 1 : 1;
 
     this.sessions.set(roomId, {
-      currentWord: word,
+      secretWord: word,
       category: category,
       roundNumber: roundNumber,
       questions: []
