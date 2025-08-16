@@ -13,7 +13,7 @@ export function QuestionsBoard() {
     // Scroll to bottom when new questions are added
     useEffect(() => {
         if (state.gameState.questions.length) scrollToBottom()
-    }, [state.gameState.questions.length])
+    }, [state.gameState.questions.length, scrollToBottom])
 
     return (
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 flex flex-col">

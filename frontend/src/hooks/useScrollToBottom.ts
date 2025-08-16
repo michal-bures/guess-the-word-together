@@ -1,8 +1,10 @@
+import { useCallback } from 'react'
+
 export function useScrollToBottom<T extends HTMLElement>(
     scrollRef: React.RefObject<T | null>,
     delay: number = 100
 ) {
-    const scrollToBottom = () => {
+    const scrollToBottom = useCallback(() => {
         if (scrollRef.current) {
             // Small delay to ensure new content is rendered
             setTimeout(() => {
@@ -12,7 +14,7 @@ export function useScrollToBottom<T extends HTMLElement>(
                 })
             }, delay)
         }
-    }
+    }, [scrollRef, delay])
 
     return { scrollToBottom }
 }

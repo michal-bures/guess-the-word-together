@@ -1,90 +1,93 @@
-import {Ollama} from 'ollama';
-import * as fs from 'fs';
-import * as path from 'path';
-import {Answer} from 'shared';
+import { Ollama } from 'ollama'
+import * as fs from 'fs'
+import * as path from 'path'
+import { Answer } from 'shared'
 
-const ollama = new Ollama({ host: 'http://localhost:11434' });
+const ollama = new Ollama({ host: 'http://localhost:11434' })
 
 const LLM_MODEL = 'llama3.2:3b'
 
 export class WordGameAI {
-  private wordList: string[] | null = null;
+    private wordList: string[] | null = null
 
-  private loadWordList(): string[] {
-    if (this.wordList !== null) {
-      return this.wordList;
+    private loadWordList(): string[] {
+        if (this.wordList !== null) {
+            return this.wordList
+        }
+        const wordListPath = path.join(__dirname, '../../data/word-list.txt')
+        const wordListContent = fs.readFileSync(wordListPath, 'utf8')
+        this.wordList = wordListContent.split(/\s+/).filter(word => word.length > 0)
+        console.log(`Loaded ${this.wordList.length} words from word list`)
+        return this.wordList
     }
-    const wordListPath = path.join(__dirname, '../../data/word-list.txt');
-    const wordListContent = fs.readFileSync(wordListPath, 'utf8');
-    this.wordList = wordListContent.split(/\s+/).filter(word => word.length > 0);
-    console.log(`Loaded ${this.wordList.length} words from word list`);
-    return this.wordList;
-  }
 
-  async pickRandomWord(): Promise<string> {
-    const wordList = this.loadWordList();
-    const randomIndex = Math.floor(Math.random() * wordList.length);
-    const selectedWord = wordList[randomIndex];
-    console.log(`Selected word: ${selectedWord} (${randomIndex + 1}/${wordList.length})`);
-    return selectedWord;
-  }
+    async pickRandomWord(): Promise<string> {
+        const wordList = this.loadWordList()
+        const randomIndex = Math.floor(Math.random() * wordList.length)
+        const selectedWord = wordList[randomIndex]
+        console.log(`Selected word: ${selectedWord} (${randomIndex + 1}/${wordList.length})`)
+        return selectedWord
+    }
 
-  async categorizeWord(word: string): Promise<string> {
-    const prompt = `What category does the word "${word}" belong to? 
+    async categorizeWord(word: string): Promise<string> {
+        const prompt = `What category does the word "${word}" belong to? 
     Choose from: living thing, object, place, food, vehicle, nature, technology, other.
-    Return only the category name.`;
+    Return only the category name.`
 
-    try {
-      const response = await ollama.generate({
-        model: LLM_MODEL,
-        prompt: prompt,
-        stream: false
-      });
+        try {
+            const response = await ollama.generate({
+                model: LLM_MODEL,
+                prompt: prompt,
+                stream: false
+            })
 
-      return response.response.trim().toLowerCase();
-    } catch (error) {
-      return 'unknown';
+            return response.response.trim().toLowerCase()
+        } catch (_error) {
+            return 'unknown'
+        }
     }
-  }
 
-  async answerQuestion(question: string, targetWord: string): Promise<Omit<Answer, 'questionId'>> {
-    try {
-      // Check if this is a direct guess (contains the word)
-      const isDirectGuess = this.checkDirectGuess(question, targetWord);
-      if (isDirectGuess) {
-        return {
-          answer: `🎉 Correct!`,
-          isCorrectGuess: true,
-        };
-      }
+    async answerQuestion(
+        question: string,
+        targetWord: string
+    ): Promise<Omit<Answer, 'questionId'>> {
+        try {
+            // Check if this is a direct guess (contains the word)
+            const isDirectGuess = this.checkDirectGuess(question, targetWord)
+            if (isDirectGuess) {
+                return {
+                    answer: `🎉 Correct!`,
+                    isCorrectGuess: true
+                }
+            }
 
-      // Use AI to answer the question
-      const answer = await this.askAI(question, targetWord);
+            // Use AI to answer the question
+            const answer = await this.askAI(question, targetWord)
 
-      return {
-        answer: answer,
-        isCorrectGuess: false
-      };
-    } catch (error) {
-        console.error(`Error answering question "${question}":`, error);
-        return {
-            answer: '⚠️ Error',
-            isCorrectGuess: false,
-            isError: true
-        };
+            return {
+                answer: answer,
+                isCorrectGuess: false
+            }
+        } catch (error) {
+            console.error(`Error answering question "${question}":`, error)
+            return {
+                answer: '⚠️ Error',
+                isCorrectGuess: false,
+                isError: true
+            }
+        }
     }
-  }
 
-  checkDirectGuess(question: string, targetWord: string): boolean {
-    const cleanQuestion = question.toLowerCase().replace(/[^a-z\s]/g, '');
-    const cleanTarget = targetWord.toLowerCase();
+    checkDirectGuess(question: string, targetWord: string): boolean {
+        const cleanQuestion = question.toLowerCase().replace(/[^a-z\s]/g, '')
+        const cleanTarget = targetWord.toLowerCase()
 
-    // Check if the question contains the exact word
-    return cleanQuestion.includes(cleanTarget);
-  }
+        // Check if the question contains the exact word
+        return cleanQuestion.includes(cleanTarget)
+    }
 
-  async askAI(question: string, targetWord: string): Promise<string> {
-    const prompt = `
+    async askAI(question: string, targetWord: string): Promise<string> {
+        const prompt = `
 The secret word  is "${targetWord}". 
     
 <instructions>
@@ -118,57 +121,57 @@ Answer with ONLY one word: Unclear, Yes, No, Maybe, Sometimes.
 
 User said: "${question}"
 Secret word is: "${targetWord}"
-Your Answer:`;
+Your Answer:`
 
-      console.log('Q: ', question, `(secret word: ${targetWord})`);
-      const response = await ollama.generate({
-        model: LLM_MODEL,
-        prompt: prompt,
-        stream: false,
-        options: {
-          temperature: 0.1,
-          top_p: 0.9
+        console.log('Q: ', question, `(secret word: ${targetWord})`)
+        const response = await ollama.generate({
+            model: LLM_MODEL,
+            prompt: prompt,
+            stream: false,
+            options: {
+                temperature: 0.1,
+                top_p: 0.9
+            }
+        })
+
+        const rawAnswer = response.response.trim()
+        const processedAnswer = this.postProcessAnswer(rawAnswer)
+        console.log('A: ', processedAnswer, `(raw: ${rawAnswer})`)
+
+        return processedAnswer
+    }
+
+    private postProcessAnswer(rawAnswer: string): string {
+        // Clean the response and extract the answer
+        const cleaned = rawAnswer.toLowerCase().trim()
+
+        // Look for valid answers in the response
+        if (cleaned.includes('yes') && !cleaned.includes('no')) {
+            return '✅'
         }
-      });
+        if (cleaned.includes('no') && !cleaned.includes('yes')) {
+            return '❌'
+        }
+        if (cleaned.includes('maybe')) {
+            return 'Maybe'
+        }
+        if (cleaned.includes('sometimes')) {
+            return 'Sometimes'
+        }
+        if (cleaned.includes('unclear')) {
+            return '😛'
+        }
 
-      const rawAnswer = response.response.trim();
-      const processedAnswer = this.postProcessAnswer(rawAnswer);
-      console.log('A: ', processedAnswer, `(raw: ${rawAnswer})`);
+        // If the response starts with a valid answer
+        if (cleaned.startsWith('yes')) return 'Yes'
+        if (cleaned.startsWith('no')) return 'No'
+        if (cleaned.startsWith('maybe')) return 'Maybe'
+        if (cleaned.startsWith('unclear')) return 'Unclear'
 
-      return processedAnswer;
-  }
-
-  private postProcessAnswer(rawAnswer: string): string {
-    // Clean the response and extract the answer
-    const cleaned = rawAnswer.toLowerCase().trim();
-
-    // Look for valid answers in the response
-    if (cleaned.includes('yes') && !cleaned.includes('no')) {
-      return '✅';
+        // Fallback for unexpected responses
+        console.warn('Unexpected AI response format:', rawAnswer)
+        return 'Unclear'
     }
-    if (cleaned.includes('no') && !cleaned.includes('yes')) {
-      return '❌';
-    }
-    if (cleaned.includes('maybe')) {
-      return 'Maybe';
-    }
-    if (cleaned.includes('sometimes')) {
-      return 'Sometimes';
-    }
-    if (cleaned.includes('unclear')) {
-      return '😛';
-    }
-
-    // If the response starts with a valid answer
-    if (cleaned.startsWith('yes')) return 'Yes';
-    if (cleaned.startsWith('no')) return 'No';
-    if (cleaned.startsWith('maybe')) return 'Maybe';
-    if (cleaned.startsWith('unclear')) return 'Unclear';
-
-    // Fallback for unexpected responses
-    console.warn('Unexpected AI response format:', rawAnswer);
-    return 'Unclear';
-  }
 }
 
-export const wordGameAI = new WordGameAI();
+export const wordGameAI = new WordGameAI()

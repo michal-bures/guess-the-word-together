@@ -1,36 +1,46 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "dev": "nodemon --exec tsx src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@types/ws": "^8.18.1",
-    "@y/websocket-server": "^0.1.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.1",
-    "ollama": "^0.5.10",
-    "shared": "file:../shared",
-    "socket.io": "^4.8.1",
-    "ws": "^8.18.3",
-    "y-websocket": "^2.0.4",
-    "yjs": "^13.6.20"
-  },
-  "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/node": "^24.3.0",
-    "nodemon": "^3.1.10",
-    "tsx": "^4.20.4",
-    "typescript": "^5.9.2"
-  }
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "",
+    "type": "module",
+    "main": "index.js",
+    "scripts": {
+        "dev": "nodemon --exec tsx src/index.ts",
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "lint": "eslint . --fix",
+        "lint:check": "eslint .",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@types/ws": "^8.18.1",
+        "@y/websocket-server": "^0.1.1",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.7",
+        "express": "^4.21.1",
+        "ollama": "^0.5.10",
+        "shared": "file:../shared",
+        "socket.io": "^4.8.1",
+        "ws": "^8.18.3",
+        "y-websocket": "^2.0.4",
+        "yjs": "^13.6.20"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.33.0",
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.3",
+        "@types/node": "^24.3.0",
+        "eslint": "^9.33.0",
+        "eslint-config-prettier": "^10.1.8",
+        "nodemon": "^3.1.10",
+        "prettier": "^3.6.2",
+        "tsx": "^4.20.4",
+        "typescript": "^5.9.2",
+        "typescript-eslint": "^8.39.1"
+    }
 }
