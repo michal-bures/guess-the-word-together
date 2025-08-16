@@ -54,7 +54,8 @@ Static typing:
 Chosen:
 - Vite
 Alternatives:
-- esbuild
+- Bun
+- Esbuild
 - Webpack
 - Rollup
 - Parcel
@@ -86,45 +87,17 @@ Alternatives:
 - Koa
 - Fastify
 
-### Monorepo
+### Package manager for monorepo
 Chosen:
-- **npm workspaces** 
+- **bun** 
 Alternatives:
+- npm
+- pnpm
 - Nx
 - Turborepo
 
 ### Frontend/Backend Communication
 - shared TS interfaces in the `shared` package (TODO)
-
-
-
-### Architecture
-
-- **Monorepo** with workspaces for clean separation
-- **React Context** + useReducer for state management
-- **Component-based** UI with reusable pieces
-- **TypeScript** throughout for type safety
-- **Socket.io rooms** for multiplayer sessions
-
-## 🤖 AI Configuration
-
-The game uses Ollama with the `llama3.2:3b` model for:
-- **Word generation** - Picking random words suitable for guessing
-- **Question answering** - Responding to yes/no questions
-- **Word categorization** - Providing helpful category hints
-
-### Fallback Mode
-If Ollama isn't running, the game falls back to:
-- Pre-defined word list for word selection
-- Simple rule-based question answering
-
-## 📝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test with both Ollama and fallback mode
-5. Submit a pull request
 
 ## 🐛 Troubleshooting
 

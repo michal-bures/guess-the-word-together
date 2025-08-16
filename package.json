@@ -8,15 +8,15 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev -w shared\" \"npm run dev -w backend\" \"npm run dev -w frontend\"",
-    "build": "npm run build --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
-    "lint:check": "npm run lint:check --workspaces --if-present",
-    "format": "npm run format --workspaces --if-present",
-    "format:check": "npm run format:check --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
-    "test:run": "npm run test:run --workspaces --if-present"
-},
+    "dev": "concurrently \"bun run dev --filter shared\" \"bun run dev --filter backend\" \"bun run dev --filter frontend\"",
+    "build": "bun run build --filter '*'",
+    "lint": "bun run lint --filter '*'",
+    "lint:check": "bun run lint:check --filter '*'",
+    "format": "bun run format --filter '*'",
+    "format:check": "bun run format:check --filter '*'",
+    "test": "bun run test --filter '*'",
+    "test:run": "bun run test:run --filter '*'"
+  },
   "devDependencies": {
     "concurrently": "^8.2.2"
   },
