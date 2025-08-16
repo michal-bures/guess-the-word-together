@@ -1,4 +1,4 @@
-export interface GameState {
+export interface GameSessionState {
     category: string
     roundNumber: number
     questions: QuestionAnswerPair[]

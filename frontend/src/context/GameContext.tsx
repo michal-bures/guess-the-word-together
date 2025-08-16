@@ -1,11 +1,11 @@
 import {createContext, type ReactNode, useContext, useEffect, useReducer, useRef} from 'react'
 import {io} from 'socket.io-client'
 import {rootReducer} from "./rootReducer.tsx";
-import type {GameState, TypedSocket} from "./types.ts";
+import type {GameSessionState, TypedSocket} from "./types.ts";
 import {type Action, Actions} from "./actions.tsx";
 import type { QuestionAnswerPair } from 'shared';
 
-const initialState: GameState = {
+const initialState: GameSessionState = {
   socket: null,
   connected: false,
   currentUserId: '',
@@ -21,7 +21,7 @@ const initialState: GameState = {
 }
 
 interface GameContextType {
-  state: GameState
+  state: GameSessionState
   dispatch: React.Dispatch<Action>
   sendQuestion: () => void
   startNewRound: () => void
@@ -39,7 +39,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   // Expose game state to global scope for debugging (only setup once)
   useEffect(() => {
-    (window as any).dumpGameState = () => {
+    (window as any).dumpGameSessionState = () => {
       const currentState = stateRef.current;
       console.group('🎮 Game State Debug');
       console.log('Full State:', currentState);
@@ -57,7 +57,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     };
 
     // Also provide direct access to current state
-    Object.defineProperty(window, 'gameState', {
+    Object.defineProperty(window, 'GameSessionState', {
       get: () => stateRef.current,
       configurable: true
     });
@@ -121,7 +121,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     newSocket.on('game-state-sync', (data: { roundNumber: number; category: string; questions: any[] }) => {
       console.log('Syncing game state:', data);
-      dispatch(Actions.syncGameState({
+      dispatch(Actions.syncGameSessionState({
         roundNumber: data.roundNumber,
         category: data.category,
         questions: data.questions.map(q => ({

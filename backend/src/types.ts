@@ -1,5 +1,5 @@
-import { GameState } from "shared";
+import { GameSessionState } from "shared";
 
-export interface BackendGameState extends GameState {
+export interface BackendGameSessionState extends GameSessionState {
     secretWord: string;
 }

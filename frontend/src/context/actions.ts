@@ -14,7 +14,7 @@ export const Actions = {
     setConnectionState: createAction<{ connected: boolean; userId?: string }>()('SET_CONNECTION_STATE'),
     addQuestion: createAction<QuestionAnswerPair>()('ADD_QUESTION'),
     updateAnswer: createAction<{ questionId: string; answer: string; isCorrectGuess?: boolean }>()('UPDATE_ANSWER'),
-    syncGameState: createAction<{ roundNumber: number; category: string; questions: QuestionAnswerPair[] }>()('SYNC_GAME_STATE'),
+    syncGameSessionState: createAction<{ roundNumber: number; category: string; questions: QuestionAnswerPair[] }>()('SYNC_GAME_STATE'),
     setQuestionInput: createAction<string>()('SET_QUESTION_INPUT'),
     setConnectedUsers: createAction<ConnectedUser[]>()('SET_CONNECTED_USERS'),
     setGamePhase: createAction<'waiting' | 'playing' | 'won'>()('SET_GAME_PHASE'),

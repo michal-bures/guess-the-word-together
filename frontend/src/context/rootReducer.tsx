@@ -1,7 +1,7 @@
-import type {GameState} from "./types.ts";
+import type {GameSessionState} from "./types.ts";
 import type {Action} from "./actions.ts";
 
-export function rootReducer(state: GameState, action: Action): GameState {
+export function rootReducer(state: GameSessionState, action: Action): GameSessionState {
     console.log('[Action]', action.type, action.payload)
     switch (action.type) {
         case 'SET_SOCKET':

@@ -18,7 +18,7 @@ export interface ConnectedUser {
     lastTyped: Date
 }
 
-export interface GameState {
+export interface GameSessionState {
     socket: TypedSocket | null
     connected: boolean
     currentUserId: string

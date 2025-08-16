@@ -1,9 +1,9 @@
 import { Ollama } from 'ollama';
 import { capitalize } from "../utils";
-import { GameState } from 'shared';
+import { GameSessionState } from 'shared';
 import * as fs from 'fs';
 import * as path from 'path';
-import {BackendGameState} from "../types";
+import {BackendGameSessionState} from "../types";
 
 const ollama = new Ollama({ host: 'http://localhost:11434' });
 
@@ -24,7 +24,7 @@ try {
 
 
 export class AIService {
-  private sessions: Map<string, BackendGameState> = new Map();
+  private sessions: Map<string, BackendGameSessionState> = new Map();
 
   async startNewGame(roomId: string): Promise<{ word: string; category: string; roundNumber: number }> {
     const word = await this.pickRandomWord();
@@ -53,20 +53,20 @@ export class AIService {
       throw new Error('No active game session');
     }
 
-    const { currentWord } = session;
+    const { secretWord } = session;
 
     // Check if this is a direct guess (contains the word)
-    const isDirectGuess = this.checkDirectGuess(question, currentWord);
+    const isDirectGuess = this.checkDirectGuess(question, secretWord);
     if (isDirectGuess) {
       return {
         answer: 'yes',
         isCorrectGuess: true,
-        explanation: `Correct! The word was "${currentWord}"`
+        explanation: `Correct! The word was "${secretWord}"`
       };
     }
 
     // Use AI to answer the question
-    const answer = await this.askAI(question, currentWord);
+    const answer = await this.askAI(question, secretWord);
 
     // Store the Q&A in session
     const questionData = {
@@ -153,7 +153,7 @@ export class AIService {
     }
   }
 
-  getGameSession(roomId: string): GameSession | undefined {
+  getGameSession(roomId: string): GameSessionState | undefined {
     return this.sessions.get(roomId);
   }
 
