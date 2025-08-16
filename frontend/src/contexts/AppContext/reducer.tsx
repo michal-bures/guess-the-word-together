@@ -1,12 +1,12 @@
-import type {Action} from "./actions";
-import {Actions} from "./actions";
-import type {AppState} from "./types";
+import type { Action } from './actions'
+import { Actions } from './actions'
+import type { AppState } from './types'
 
 export function reducer(state: AppState, action: Action): AppState {
     console.log('[Action]', action.type, action.payload)
     switch (action.type) {
         case Actions.setSocket.type:
-            return {...state, socket: action.payload}
+            return { ...state, socket: action.payload }
         case Actions.setConnectionState.type:
             return {
                 ...state,
@@ -18,7 +18,7 @@ export function reducer(state: AppState, action: Action): AppState {
                 ...state,
                 gameState: {
                     ...state.gameState,
-                    gameOver: action.payload,
+                    gameOver: action.payload
                 }
             }
         case Actions.addQuestion.type:
@@ -26,7 +26,7 @@ export function reducer(state: AppState, action: Action): AppState {
                 ...state,
                 gameState: {
                     ...state.gameState,
-                    questions: [...state.gameState.questions, action.payload],
+                    questions: [...state.gameState.questions, action.payload]
                 }
             }
         case Actions.addAnswer.type:
@@ -36,10 +36,14 @@ export function reducer(state: AppState, action: Action): AppState {
                     ...state.gameState,
                     questions: state.gameState.questions.map(q =>
                         q.id === action.payload.questionId
-                            ? {...q, answer: action.payload.answer, isCorrectGuess: action.payload.isCorrectGuess}
+                            ? {
+                                  ...q,
+                                  answer: action.payload.answer,
+                                  isCorrectGuess: action.payload.isCorrectGuess
+                              }
                             : q
                     )
-                },
+                }
             }
         case Actions.syncGameSessionState.type:
             return {
@@ -47,9 +51,9 @@ export function reducer(state: AppState, action: Action): AppState {
                 gameState: action.payload
             }
         case Actions.setQuestionInput.type:
-            return {...state, questionInput: action.payload}
+            return { ...state, questionInput: action.payload }
         case Actions.setConnectedUsers.type:
-            return {...state, connectedUsers: action.payload}
+            return { ...state, connectedUsers: action.payload }
         default:
             return state
     }

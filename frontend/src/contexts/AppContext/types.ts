@@ -1,7 +1,7 @@
-import type {Socket} from "socket.io-client";
-import type {ClientToServerEvents, GameSessionState, ServerToClientEvents} from "shared";
+import type { Socket } from 'socket.io-client'
+import type { ClientToServerEvents, GameSessionState, ServerToClientEvents } from 'shared'
 
-export type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+export type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>
 
 export interface ConnectedUser {
     id: string
@@ -19,4 +19,3 @@ export interface AppState {
     questionInput: string
     gameState: GameSessionState
 }
-

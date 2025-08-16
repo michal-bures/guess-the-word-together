@@ -1,19 +1,19 @@
-import {createContext, useContext} from 'react'
-import type {AppState} from "./types";
+import { createContext, useContext } from 'react'
+import type { AppState } from './types'
 
 interface GameContextType {
-  state: AppState
-  sendQuestion: () => void
-  startNewRound: () => void
-  updateQuestionInput: (input: string) => void
+    state: AppState
+    sendQuestion: () => void
+    startNewRound: () => void
+    updateQuestionInput: (input: string) => void
 }
 
 export const AppContext = createContext<GameContextType | undefined>(undefined)
 
 export function useAppContext() {
-  const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error('useAppState must be used within a GameProvider');
-  }
-  return context;
+    const context = useContext(AppContext)
+    if (context === undefined) {
+        throw new Error('useAppState must be used within a GameProvider')
+    }
+    return context
 }

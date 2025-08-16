@@ -2,24 +2,24 @@ import { Header } from './components/Header'
 import { QuestionsBoard } from './components/QuestionsBoard/QuestionsBoard'
 import { QuestionInput } from './components/QuestionInput'
 import { PlayersSidebar } from './components/PlayersSidebar'
-import {GameProvider} from "./contexts/AppContext/AppContextProvider";
+import { GameProvider } from './contexts/AppContext/AppContextProvider'
 
 function App() {
-  return (
-    <GameProvider>
-      <div className="h-screen bg-gray-50 flex">
-        {/* Main Chat Area */}
-        <div className="flex-1 flex flex-col">
-          <Header />
-          <QuestionsBoard />
-          <QuestionInput />
-        </div>
+    return (
+        <GameProvider>
+            <div className="h-screen bg-gray-50 flex">
+                {/* Main Chat Area */}
+                <div className="flex-1 flex flex-col">
+                    <Header />
+                    <QuestionsBoard />
+                    <QuestionInput />
+                </div>
 
-        {/* Right Sidebar */}
-        <PlayersSidebar />
-      </div>
-    </GameProvider>
-  )
+                {/* Right Sidebar */}
+                <PlayersSidebar />
+            </div>
+        </GameProvider>
+    )
 }
 
 export default App

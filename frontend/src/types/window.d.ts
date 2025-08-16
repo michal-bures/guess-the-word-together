@@ -1,7 +1,7 @@
 declare global {
-  interface Window {
-    getAppState: () => void;
-  }
+    interface Window {
+        getAppState: () => void
+    }
 }
 
-export {};
+export {}

@@ -1,8 +1,8 @@
-import type {AppState} from "../contexts/AppContext/types";
-import {useAppContext} from "../contexts/AppContext/AppContext";
+import type { AppState } from '../contexts/AppContext/types'
+import { useAppContext } from '../contexts/AppContext/AppContext'
 
 export function GameStatusMessage() {
-    const { state, startNewRound } = useAppContext();
+    const { state, startNewRound } = useAppContext()
     const { title, subtitle } = getStatusMessage(state)
 
     return (
@@ -19,9 +19,8 @@ export function GameStatusMessage() {
                 </button>
             )}
         </div>
-    );
+    )
 }
-
 
 function getStatusMessage(state: AppState) {
     if (!state.socket?.connected) {
