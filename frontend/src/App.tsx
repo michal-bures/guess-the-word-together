@@ -1,8 +1,8 @@
-import { GameProvider } from './context/GameContext'
 import { Header } from './components/Header'
-import { ChatArea } from './components/ChatArea'
+import { QuestionsBoard } from './components/QuestionsBoard'
 import { QuestionInput } from './components/QuestionInput'
 import { PlayersSidebar } from './components/PlayersSidebar'
+import {GameProvider} from "./contexts/AppContext/AppContextProvider";
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
         {/* Main Chat Area */}
         <div className="flex-1 flex flex-col">
           <Header />
-          <ChatArea />
+          <QuestionsBoard />
           <QuestionInput />
         </div>
 

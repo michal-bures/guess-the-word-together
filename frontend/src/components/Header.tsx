@@ -1,7 +1,7 @@
-import { useGame } from '../context/GameContext'
+import { useAppState } from '../contexts/AppContext/AppContext'
 
 export function Header() {
-  const { state, startNewRound } = useGame()
+  const { state, startNewRound } = useAppState()
 
   return (
     <div className="bg-white border-b border-gray-200 p-4 h-16 flex items-center">
@@ -9,7 +9,7 @@ export function Header() {
         <h1 className="text-2xl font-bold text-gray-900">
           Guess the Word Together
         </h1>
-        
+
         <button
           onClick={startNewRound}
           disabled={!state.connected}

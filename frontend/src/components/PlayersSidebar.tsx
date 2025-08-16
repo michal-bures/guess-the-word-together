@@ -1,7 +1,7 @@
-import { useGame } from '../context/GameContext'
+import { useAppState } from '../contexts/AppContext/AppContext'
 
 export function PlayersSidebar() {
-  const { state } = useGame()
+  const { state } = useAppState()
 
   return (
     <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
@@ -49,20 +49,13 @@ export function PlayersSidebar() {
         <div className="text-center">
           <p className="text-sm font-medium text-gray-900">Game Status</p>
           <div className="space-y-1">
-            {state.gamePhase === 'waiting' && (
-              <p className="text-xs text-gray-600">Waiting to start...</p>
-            )}
-            {state.gamePhase === 'playing' && (
+            {!state.gameState.gameOver && (
               <>
-                <p className="text-xs text-green-600">Round {state.currentRound} - Playing!</p>
-                <p className="text-xs text-gray-400">Questions asked: {state.questionsAsked}</p>
+                <p className="text-xs text-green-600">Playing!</p>
               </>
             )}
-            {state.gamePhase === 'won' && (
-              <p className="text-xs text-blue-600">Round ending...</p>
-            )}
-            {state.lastWinner && (
-              <p className="text-xs text-purple-600">Last winner: {state.lastWinner}</p>
+            {state.gameState.gameOver && (
+              <p className="text-xs text-blue-600">Game over!</p>
             )}
           </div>
         </div>

@@ -1,8 +1,8 @@
-import {Actions} from "../context/actions.tsx";
-import {useGame} from "../context/GameContext.tsx";
+import {Actions} from "../contexts/AppContext/actions";
+import {useAppState} from "../contexts/AppContext/AppContext";
 
 export function QuestionInput() {
-    const {state, dispatch, sendQuestion} = useGame()
+    const {state, dispatch, sendQuestion} = useAppState()
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
@@ -15,7 +15,7 @@ export function QuestionInput() {
             <div className="flex gap-2">
                 <input
                     type="text"
-                    value={state.question}
+                    value={state.questionInput}
                     onChange={(e) => dispatch(Actions.setQuestionInput(e.target.value))}
                     onKeyDown={handleKeyDown}
                     placeholder="Ask a yes/no question about the word..."
@@ -23,7 +23,7 @@ export function QuestionInput() {
                 />
                 <button
                     onClick={sendQuestion}
-                    disabled={!state.connected || !state.question.trim()}
+                    disabled={!state.connected || !state.questionInput.trim()}
                     className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                 >
                     Ask

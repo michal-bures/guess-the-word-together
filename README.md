@@ -47,7 +47,7 @@ Players can see each other typing in real-time and ask yes/no questions to narro
 - monorepo using npm workspaces
 
 Static typing:
-- [Typesafe action definitions](./frontend/src/context/actions.ts)
+- [Typesafe action definitions](frontend/src/contexts/AppContext/actions.ts)
 - [Typesafe websocket events protocol between frontend and backend]()
 
 

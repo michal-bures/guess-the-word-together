@@ -28,6 +28,10 @@ export default tseslint.config([
               group: ['**/dist/**', '*/dist/**', 'dist/**'],
               message: 'Direct imports from dist directories are not allowed. Use proper package imports instead.',
             },
+            {
+              group: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+              message: 'Do not include file extensions in imports. TypeScript will resolve them automatically.',
+            },
           ],
         },
       ],
