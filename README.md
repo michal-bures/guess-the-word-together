@@ -1,126 +1,83 @@
 # Guess the Word Together
 
-A collaborative multiplayer word guessing game where players work together to guess a secret word chosen by AI. Players can see each other typing in real-time and ask yes/no questions to narrow down the possibilities.
+A playground for a bunch of tech used for developing react SPA featuring real-time collaboration.
 
-## 🎮 How It Works
-
-1. **AI picks a secret word** and gives you a category hint
-2. **Players ask yes/no questions** like "Is it alive?" or "Is it bigger than a car?"
-3. **AI responds** with Yes, No, Maybe, or Unclear
-4. **Make a guess** when you think you know: "Is it a phone?"
-5. **Win and repeat** - New round starts automatically with a new word!
-
-## 🚀 Quick Start
+A collaborative multiplayer word guessing game where players work together to guess a secret word chosen by AI.
+Players can see each other typing in real-time and ask yes/no questions to narrow down the possibilities.
 
 ### Prerequisites
 
 - **Node.js** 18+ and npm
 - **Ollama** for AI-powered responses
 
-### 1. Install Ollama
+### How to Run this
 
 ```bash
-# macOS
-brew install ollama
+  # Install and setup Ollama (macOS)
+  brew install ollama
 
-# Or download from: https://ollama.ai/download
-```
+  # Start Ollama service (keep running in background)
+  ollama serve &
 
-### 2. Set up Ollama
+  # Pull required model and test
+  ollama pull llama3.2:3b
+  ollama run llama3.2:3b "Hello!"
 
-```bash
-# Start Ollama service (keep this running)
-ollama serve
+  # Install all dependencies
+  npm install && npm run install
 
-# In another terminal, pull the required model
-ollama pull llama3.2:3b
-
-# Test it works
-ollama run llama3.2:3b "Hello!"
-```
-
-### 3. Install Dependencies
-
-```bash
-# Install root dependencies
-npm install
-
-# Install all package dependencies
-npm run install:all
-```
-
-### 4. Start the Servers
-
-```bash
-# Start both frontend and backend
-npm run dev
-
-# Or run separately:
-# Backend: cd backend && npm run dev
-# Frontend: cd frontend && npm run dev
-```
-
-### 5. Play!
-
-- Open http://localhost:5173
-- The game starts automatically when you connect
-- Ask questions and make guesses!
-
-## 🏗️ Project Structure
-
-```
-guess-the-word-together/
-├── frontend/           # React + TypeScript + Tailwind
-│   ├── src/
-│   │   ├── components/ # UI components
-│   │   ├── context/    # Game state management
-│   │   └── ...
-├── backend/            # Express + Socket.io + Ollama
-│   ├── src/
-│   │   ├── services/   # AI service
-│   │   └── ...
-├── shared/             # Shared TypeScript types
-└── package.json        # Monorepo configuration
+  # Start both frontend and backend servers
+  npm run dev
 ```
 
 ## 🛠️ Tech Stack
 
-### Frontend
-- **React 18** with TypeScript
-- **Vite** for fast development
-- **Tailwind CSS** for styling
-- **Socket.io Client** for real-time communication
-- **Yjs** for collaborative typing (planned)
+### Bundler
+Chosen:
+- Vite
+Alternatives:
+- esbuild
+- Webpack
+- Rollup
+- Parcel
+- Snowpack
+
+### Linting and formatting
+Chosen:
+- ESLint (+ typescript-eslint) + Prettier
+Alternatives:
+- Biome - a new all-in-one tool, but ecosystem of plugins is not mature yet
+
+### Server
+- **Bun** (TODO)
+
+### State Management
+Chosen:
+- React Context + useReducer 
+Alternatives:
+- Redux Toolkit
+- Zustand
+
+### Collaboration
+- **Yjs** for real-time collaborative features
+- **WebSocket** for real-time communication
 
 ### Backend
-- **Express** + TypeScript server
-- **Socket.io** for real-time multiplayer
-- **Ollama** for local AI responses
-- **Yjs WebSocket** for collaborative features
+- Express
+Alternatives:
+- Koa
+- Fastify
 
-### AI
-- **Ollama** with Llama 3.2 3B model
-- Fallback word list when AI unavailable
-- Smart question answering and word generation
+### Monorepo
+- **npm workspaces** 
 
-## 🎯 Game Features
+### Frontend/Backend Communication
+- shared TS interfaces in the `shared` package (TODO)
 
-- **Real-time multiplayer** - Multiple players in shared room
-- **AI-powered gameplay** - Intelligent responses to questions
-- **Collaborative typing** - See what others are typing (coming soon)
-- **Continuous rounds** - Game never stops, new words automatically
-- **Smart win detection** - AI recognizes correct guesses
-- **Category hints** - AI categorizes words to help players
-
-## 🔧 Development
-
-### Scripts
-
-```bash
-npm run dev          # Start both servers
-npm run build        # Build all packages
-npm run install:all  # Install all dependencies
-```
+### Things to try out next
+- MCP API
+- Code splitting & lazy loading
+- 
 
 ### Architecture
 
