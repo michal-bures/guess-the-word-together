@@ -58,7 +58,7 @@ export function PlayersSidebar() {
                 <p className="text-xs text-gray-400">Questions asked: {state.questionsAsked}</p>
               </>
             )}
-            {state.gamePhase === 'round_ending' && (
+            {state.gamePhase === 'won' && (
               <p className="text-xs text-blue-600">Round ending...</p>
             )}
             {state.lastWinner && (

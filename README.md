@@ -75,6 +75,8 @@ Alternatives:
 - shared TS interfaces in the `shared` package (TODO)
 
 ### Things to try out next
+- Yjs collaboration with WebSocket
+- Bun for the server
 - MCP API
 - Code splitting & lazy loading
 - 
