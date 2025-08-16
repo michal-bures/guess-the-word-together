@@ -1,5 +1,5 @@
 import { Header } from './components/Header'
-import { QuestionsBoard } from './components/QuestionsBoard'
+import { QuestionsBoard } from './components/QuestionsBoard/QuestionsBoard'
 import { QuestionInput } from './components/QuestionInput'
 import { PlayersSidebar } from './components/PlayersSidebar'
 import {GameProvider} from "./contexts/AppContext/AppContextProvider";

@@ -87,9 +87,10 @@ export class WordGameAI {
   }
 
   async askAI(question: string, targetWord: string): Promise<string> {
-    const prompt = `I'm thinking of the word "${targetWord}".
-Question: "${question}"
-
+    const prompt = `
+The secret word  is "${targetWord}". 
+    
+<instructions>
 Think step by step:
 1. Is this a yes/no question about properties of ${targetWord}?
 2. What specific property or characteristic is being asked about?
@@ -104,16 +105,23 @@ Examples:
 - "Is it used for transportation?" about "bicycle" → Yes (bicycles transport people)
 - "Does it have wings?" about "airplane" → Yes (airplanes have wings)
 - "Is it an animal?" about "dog" → Yes (dogs are animals)
+- "Is it big?" about "house" → Maybe (depends on context, could be big or small)
+- "Is it plastic?" about "chair" → Maybe (depends on the chair type)
+- "Does it store treasure?" about "chest" → Sometimes (it depends on the chest)
 
 Rules:
-- Answer "Yes" if the question is clearly and definitely true about ${targetWord}
-- Answer "No" if the question is clearly and definitely false about ${targetWord}
-- Answer "Maybe" only if it's genuinely ambiguous or depends on context/interpretation
 - Answer "Unclear" if the question isn't a yes/no question, is too vague, or you're unsure
+- Answer "Yes" ONLY if the question is ALWAYS, EVERY TIME true about ${targetWord}
+- Answer "Sometimes" if the question is sometimes true and sometimes false about ${targetWord}
+- Answer "No" if the question is usually false about ${targetWord}
+- Answer "Maybe" only if it's ambiguous or depends on context/interpretation
 
-Answer with ONLY one word: Yes, No, Maybe, or Unclear.
+Answer with ONLY one word: Unclear, Yes, No, Maybe, Sometimes.
+</instructions>
 
-Answer:`;
+User said: "${question}"
+Secret word is: "${targetWord}"
+Your Answer:`;
 
       console.log('Q: ', question, `(secret word: ${targetWord})`);
       const response = await ollama.generate({
@@ -139,16 +147,19 @@ Answer:`;
 
     // Look for valid answers in the response
     if (cleaned.includes('yes') && !cleaned.includes('no')) {
-      return 'Yes';
+      return '✅';
     }
     if (cleaned.includes('no') && !cleaned.includes('yes')) {
-      return 'No';
+      return '❌';
     }
     if (cleaned.includes('maybe')) {
       return 'Maybe';
     }
+    if (cleaned.includes('sometimes')) {
+      return 'Sometimes';
+    }
     if (cleaned.includes('unclear')) {
-      return 'Unclear';
+      return '😛';
     }
 
     // If the response starts with a valid answer
