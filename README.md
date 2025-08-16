@@ -5,12 +5,12 @@ A playground for a bunch of tech used for developing react SPA featuring real-ti
 A collaborative multiplayer word guessing game where players work together to guess a secret word chosen by AI.
 Players can see each other typing in real-time and ask yes/no questions to narrow down the possibilities.
 
-### Prerequisites
+## Prerequisites
 
 - **Node.js** 18+ and npm
 - **Ollama** for AI-powered responses
 
-### How to Run this
+## How to Run this
 
 ```bash
   # Install and setup Ollama (macOS)
@@ -30,74 +30,69 @@ Players can see each other typing in real-time and ask yes/no questions to narro
   npm run dev
 ```
 
-
-
 ## 🛠️ Tech Stack
 
 ### TODO
+- Switch from express to Koa or Buns built-in server or maybe Fastify?
 - Build container, setup CI/CD
 - Yjs collaboration with WebSocket
-- Bun for the server
 - MCP API
 - Code splitting & lazy loading
--
+- Tracking test runtime duration, coverage
+- Tracking bundle size
 
-### Interesting feature
-- monorepo using npm workspaces
-
+### Points of interest
 Static typing:
-- [Typesafe action definitions](frontend/src/contexts/AppContext/actions.ts)
-- [Typesafe websocket events protocol between frontend and backend]()
+- [Typesafe action definitions](packages/frontend/src/contexts/AppContext/actions.ts)
+- [Typesafe websocket events protocol between frontend and backend](packages/shared/src/types/socketIoEvents.ts)
 
+### Package manager for monorepo
+**Bun**
+
+Alternatives:
+- npm
+  - Nx
+  - Turborepo
+
+- pnpm
 
 ### Bundler
-Chosen:
-- Vite
+
+**Vite**
+
 Alternatives:
 - Bun
 - Esbuild
 - Webpack
 - Rollup
 - Parcel
-- Snowpack
 
 ### Linting and formatting
-Chosen:
-- ESLint (+ typescript-eslint) + Prettier
+
+**ESLint (+ typescript-eslint) + Prettier**
+
 Alternatives:
 - Biome - a new all-in-one tool, but ecosystem of plugins is not mature yet
 
 ### Server
 - **Bun** (TODO)
 
-### State Management
-Chosen:
-- React Context + useReducer 
+Alternatives:
+- Express
+- Koa
+- Fastify
+
+### Frontend State Management
+plain react context & useReducer + lightweight custom wrapper for defining actions and reducers
+
 Alternatives:
 - Redux Toolkit
 - Zustand
 
-### Collaboration
+### Realtime collaboration
 - **Yjs** for real-time collaborative features
-- **WebSocket** for real-time communication
+- **socket.io** for websockets (+ fallback to long-polling)
 
-### Backend
-- Express
-Alternatives:
-- Koa
-- Fastify
-
-### Package manager for monorepo
-Chosen:
-- **bun** 
-Alternatives:
-- npm
-- pnpm
-- Nx
-- Turborepo
-
-### Frontend/Backend Communication
-- shared TS interfaces in the `shared` package (TODO)
 
 ## 🐛 Troubleshooting
 

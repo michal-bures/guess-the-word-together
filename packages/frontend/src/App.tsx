@@ -8,14 +8,11 @@ function App() {
     return (
         <GameProvider>
             <div className="h-screen bg-gray-50 flex">
-                {/* Main Chat Area */}
                 <div className="flex-1 flex flex-col">
                     <Header />
                     <QuestionsBoard />
                     <QuestionInput />
                 </div>
-
-                {/* Right Sidebar */}
                 <PlayersSidebar />
             </div>
         </GameProvider>
