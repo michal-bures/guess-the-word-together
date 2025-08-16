@@ -1,8 +1,7 @@
-import {Actions} from "../contexts/AppContext/actions";
-import {useAppState} from "../contexts/AppContext/AppContext";
+import {useAppContext} from "../contexts/AppContext/AppContext";
 
 export function QuestionInput() {
-    const {state, dispatch, sendQuestion} = useAppState()
+    const {state, sendQuestion, updateQuestionInput} = useAppContext()
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
@@ -16,7 +15,7 @@ export function QuestionInput() {
                 <input
                     type="text"
                     value={state.questionInput}
-                    onChange={(e) => dispatch(Actions.setQuestionInput(e.target.value))}
+                    onChange={(e) => updateQuestionInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Ask a yes/no question about the word..."
                     className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

@@ -1,7 +1,7 @@
-import { useAppState } from '../contexts/AppContext/AppContext'
+import { useAppContext } from '../contexts/AppContext/AppContext'
 
 export function PlayersSidebar() {
-  const { state } = useAppState()
+  const { state } = useAppContext()
 
   return (
     <div className="w-80 bg-white border-l border-gray-200 flex flex-col">

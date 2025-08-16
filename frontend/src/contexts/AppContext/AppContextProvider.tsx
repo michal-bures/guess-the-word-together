@@ -99,15 +99,12 @@ export function GameProvider({children}: { children: ReactNode }) {
         }
     }
 
-    const formatTime = (date: Date) => {
-        return date.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit'
-        })
+    const updateQuestionInput = (input: string) => {
+        dispatch(Actions.setQuestionInput(input))
     }
 
     return (
-        <AppContext.Provider value={{state, dispatch, sendQuestion, startNewRound, formatTime}}>
+        <AppContext.Provider value={{state, sendQuestion, startNewRound, updateQuestionInput}}>
             {children}
         </AppContext.Provider>
     )

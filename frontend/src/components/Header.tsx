@@ -1,7 +1,7 @@
-import { useAppState } from '../contexts/AppContext/AppContext'
+import { useAppContext } from '../contexts/AppContext/AppContext'
 
 export function Header() {
-  const { state, startNewRound } = useAppState()
+  const { state, startNewRound } = useAppContext()
 
   return (
     <div className="bg-white border-b border-gray-200 p-4 h-16 flex items-center">
@@ -15,7 +15,7 @@ export function Header() {
           disabled={!state.connected}
           className="px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
         >
-          New Round
+          Restart
         </button>
       </div>
     </div>
