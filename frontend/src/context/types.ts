@@ -1,4 +1,7 @@
-import {Socket} from "socket.io-client";
+import type {Socket} from "socket.io-client";
+import type {ClientToServerEvents, ServerToClientEvents} from "./socket-types.ts";
+
+export type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
 export interface ChatMessage {
     id: string
@@ -25,7 +28,7 @@ export interface ConnectedUser {
 }
 
 export interface GameState {
-    socket: Socket | null
+    socket: TypedSocket | null
     connected: boolean
     currentUserId: string
     questionAnswerPairs: QuestionAnswerPair[]

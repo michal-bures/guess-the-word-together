@@ -1,7 +1,7 @@
 import {createContext, type ReactNode, useContext, useEffect, useReducer, useRef} from 'react'
 import {io} from 'socket.io-client'
 import {rootReducer} from "./rootReducer.tsx";
-import type {GameState, QuestionAnswerPair} from "./types.ts";
+import type {GameState, QuestionAnswerPair, TypedSocket} from "./types.ts";
 import {type Action, Actions} from "./actions.tsx";
 
 const initialState: GameState = {
@@ -63,7 +63,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, []); // Empty dependency array - only runs once
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3001')
+    const newSocket: TypedSocket = io('http://localhost:3001')
     dispatch(Actions.setSocket(newSocket))
 
     newSocket.on('connect', () => {
@@ -80,13 +80,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
     })
 
     // Handle status messages
-    newSocket.on('status-message', (message: string) => {
+    newSocket.on('status-message', (message) => {
       dispatch(Actions.setStatusMessage(message))
     })
 
     // Handle new round starting
-    newSocket.on('round-started', (data: { round: number; category: string; message: string }) => {
-      dispatch(Actions.startNewRound({ round: data.round, category: data.category, statusMessage: data.message }))
+    newSocket.on('round-started', (data) => {
+      dispatch(Actions.startNewRound({
+        round: data.round,
+        category: data.category,
+        statusMessage: data.message
+      }))
     })
 
     // Handle question answers

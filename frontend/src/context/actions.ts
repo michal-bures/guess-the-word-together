@@ -1,11 +1,13 @@
-import {Socket} from "socket.io-client";
-import type {ConnectedUser, QuestionAnswerPair} from "./types.ts";
+import type {ConnectedUser, QuestionAnswerPair, TypedSocket} from "./types.ts";
+
+type ActionCreatorReturn<T> = T extends (...args: any[]) => infer R ? R : never
+export type Action = ActionCreatorReturn<typeof Actions[keyof typeof Actions]>
 
 const createAction = <P>() => <T extends string>(type: T) =>
     (payload: P) => ({ type, payload } as const)
 
 export const Actions = {
-    setSocket: createAction<Socket>()('SET_SOCKET'),
+    setSocket: createAction<TypedSocket>()('SET_SOCKET'),
     setConnectionState: createAction<{ connected: boolean; userId?: string }>()('SET_CONNECTION_STATE'),
     addQuestion: createAction<QuestionAnswerPair>()('ADD_QUESTION'),
     updateAnswer: createAction<{ questionId: string; answer: string; isCorrectGuess?: boolean }>()('UPDATE_ANSWER'),
@@ -18,6 +20,3 @@ export const Actions = {
     setStatusMessage: createAction<string>()('SET_STATUS_MESSAGE'),
 }
 
-// Infer the Action type from the return types of all action creators
-type ActionCreatorReturn<T> = T extends (...args: any[]) => infer R ? R : never
-export type Action = ActionCreatorReturn<typeof Actions[keyof typeof Actions]>

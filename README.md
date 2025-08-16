@@ -30,7 +30,17 @@ Players can see each other typing in real-time and ask yes/no questions to narro
   npm run dev
 ```
 
+
+
 ## 🛠️ Tech Stack
+
+### Interesting feature
+- monorepo using npm workspaces
+
+Static typing:
+- [Typesafe action definitions](./frontend/src/context/actions.ts)
+- [Typesafe socket events]()
+
 
 ### Bundler
 Chosen:
@@ -69,7 +79,11 @@ Alternatives:
 - Fastify
 
 ### Monorepo
+Chosen:
 - **npm workspaces** 
+Alternatives:
+- Nx
+- Turborepo
 
 ### Frontend/Backend Communication
 - shared TS interfaces in the `shared` package (TODO)
