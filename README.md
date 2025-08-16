@@ -35,7 +35,6 @@ Players can see each other typing in real-time and ask yes/no questions to narro
 ## 🛠️ Tech Stack
 
 ### TODO
-- Setup vitestn
 - Build container, setup CI/CD
 - Yjs collaboration with WebSocket
 - Bun for the server

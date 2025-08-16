@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react'
 import type { AppState } from './types'
 
-interface GameContextType {
+export interface GameContextType {
     state: AppState
     sendQuestion: () => void
     startNewRound: () => void
