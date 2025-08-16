@@ -3,7 +3,7 @@ import { Actions } from './actions'
 import type { AppState } from './types'
 
 export function reducer(state: AppState, action: Action): AppState {
-    console.log('[Action]', action.type, action.payload)
+    console.debug('[Action]', action.type, action.payload)
     switch (action.type) {
         case Actions.setSocket.type:
             return { ...state, socket: action.payload }
