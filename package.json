@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently \"bun run dev --filter shared\" \"bun run dev --filter backend\" \"bun run dev --filter frontend\"",
+    "dev": "concurrently --names \"frontend,backend,shared\" \"bun run --filter=frontend dev\" \"bun run --filter=backend dev\" \"bun run --filter=shared dev\"",
     "build": "bun run build --filter '*'",
     "lint": "bun run lint --filter '*'",
     "lint:check": "bun run lint:check --filter '*'",
