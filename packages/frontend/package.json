@@ -25,9 +25,7 @@
         "react-dom": "^19.1.1",
         "shared": "workspace:*",
         "socket.io-client": "^4.8.1",
-        "tailwindcss": "^4.1.12",
-        "y-websocket": "^3.0.0",
-        "yjs": "^13.6.27"
+        "tailwindcss": "^4.1.12"
     },
     "devDependencies": {
         "@eslint/js": "catalog:",

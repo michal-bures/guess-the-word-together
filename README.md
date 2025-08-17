@@ -47,6 +47,7 @@ Requires:
 ## 🛠️ Tech Stack
 
 ### TODO
+- Simplify types sharing to not require build step?
 - Evaluate Yjs or other libraries for real-time collaboration?
 - Test out code splitting & lazy loading
 - Investigate ways to track test runtime duration, coverage, bundle size and similar metrics over time

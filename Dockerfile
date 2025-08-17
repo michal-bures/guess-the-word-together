@@ -47,8 +47,8 @@ COPY --from=build /usr/src/app/packages/backend/data packages/backend/data
 # Create non-root user for security
 USER bun
 
-# Expose ports for API server and WebSocket server
-EXPOSE 3001 1234
+# Expose port for API server
+EXPOSE 3001
 
 # Start the application from backend
 WORKDIR /usr/src/app/packages/backend

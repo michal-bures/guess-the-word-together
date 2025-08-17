@@ -4,7 +4,6 @@ require('dotenv').config()
 export const config = {
     // Server configuration
     port: parseInt(process.env.PORT || '3001'),
-    wsPort: parseInt(process.env.WS_PORT || '1234'),
 
     // CORS configuration
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
