@@ -181,7 +181,7 @@ jobs:
   trigger-deploy:
     runs-on: ubuntu-latest
     needs: [ build-image, check-tests ]
-    if: ${{ always() }}
+    if: ${{ always() && github.ref == 'refs/heads/main' }}
 
     steps:
       - id: check
