@@ -29,6 +29,7 @@ export default tseslint.config([
                     ]
                 }
             ],
+            // Replace @typescript-eslint/no-unused-vars with unused-imports plugin which can auto-remove unused imports
             '@typescript-eslint/no-unused-vars': 'off',
             'unused-imports/no-unused-vars': [
                 'error',

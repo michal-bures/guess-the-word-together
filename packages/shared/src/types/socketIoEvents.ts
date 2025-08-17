@@ -1,5 +1,10 @@
 // Socket.IO event types
-import { GameOverInfo, GameSessionState, QuestionAnswerPair, UserInfo } from './gameSessionState'
+import type {
+    GameOverInfo,
+    GameSessionState,
+    QuestionAnswerPair,
+    UserInfo
+} from './gameSessionState'
 
 export interface ServerToClientEvents {
     'question-updated': (data: QuestionAnswerPair) => void

@@ -1,2 +1,2 @@
-export type * from './types/socketIoEvents';
-export type * from './types/gameSessionState';
+export * from './types/socketIoEvents'
+export * from './types/gameSessionState'
