@@ -1,5 +1,5 @@
 import type { AppState } from '../contexts/AppContext/types'
-import { AppContext, type GameContextType } from '../contexts/AppContext/AppContext'
+import { AppContext, type AppContextType } from '../contexts/AppContext/AppContext'
 import { mockAppState } from './mockAppState'
 import { render } from '@testing-library/react'
 import { vi } from 'vitest'
@@ -8,7 +8,7 @@ export function renderWithMockAppState(
     component: React.ReactElement,
     state: AppState = mockAppState(),
     mockFunctions: Partial<
-        Pick<GameContextType, 'startNewRound' | 'sendQuestion' | 'updateQuestionInput' | 'giveUp'>
+        Pick<AppContextType, 'startNewRound' | 'sendQuestion' | 'updateQuestionInput' | 'giveUp'>
     > = {}
 ) {
     const fullState = mockAppState(state)
@@ -17,7 +17,7 @@ export function renderWithMockAppState(
     const mockUpdateQuestionInput = vi.fn()
     const mockGiveUp = vi.fn()
 
-    const contextValue: GameContextType = {
+    const contextValue: AppContextType = {
         state: fullState,
         startNewRound: mockFunctions.startNewRound || mockStartNewRound,
         sendQuestion: mockFunctions.sendQuestion || mockSendQuestion,

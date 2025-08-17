@@ -52,6 +52,11 @@ export class GameController {
             }
         })
 
+        // Handle start new game
+        socket.on('start-game', async () => {
+            await this.startNewGame(roomId, socket)
+        })
+
         // Handle disconnection
         socket.on('disconnect', () => {
             this._handleDisconnection(socket.id!)

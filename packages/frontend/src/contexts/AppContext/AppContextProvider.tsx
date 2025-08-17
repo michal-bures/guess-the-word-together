@@ -19,7 +19,7 @@ const initialState: AppState = {
     connectedUsers: []
 }
 
-export function GameProvider({ children }: { children: ReactNode }) {
+export function AppContextProvider({ children }: { children: ReactNode }) {
     const [state, dispatch] = useReducer(reducer, initialState)
     const { toasts, showError, removeToast } = useToast()
 
