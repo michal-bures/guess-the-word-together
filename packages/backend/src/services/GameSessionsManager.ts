@@ -1,7 +1,7 @@
 import { QuestionAnswerPair } from 'shared'
 import { BackendGameSessionState } from '../types'
 
-export class GameDirector {
+export class GameSessionsManager {
     private sessions: Map<string, BackendGameSessionState> = new Map()
 
     startNewGame(roomId: string, secretWord: string, category: string): BackendGameSessionState {
@@ -61,4 +61,4 @@ export class GameDirector {
     }
 }
 
-export const gameDirector = new GameDirector()
+export const gameSessionsManager = new GameSessionsManager()
