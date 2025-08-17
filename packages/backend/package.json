@@ -45,6 +45,7 @@
         "@types/node": "^24.3.0",
         "eslint": "catalog:",
         "eslint-config-prettier": "catalog:",
+        "eslint-plugin-unused-imports": "catalog:",
         "prettier": "catalog:",
         "typescript": "catalog:",
         "typescript-eslint": "catalog:",

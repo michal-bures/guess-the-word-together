@@ -1,8 +1,8 @@
-import type { Server, Socket } from 'socket.io'
-import type { ClientToServerEvents, ServerToClientEvents, GameSessionState } from 'shared'
+import type { Server } from 'socket.io'
+import type { ClientToServerEvents, GameSessionState, ServerToClientEvents } from 'shared'
 import { WordGameAI } from '../services/WordGameAI'
 import { GameSessionsManager } from '../services/GameSessionsManager'
-import { BackendGameSessionState, GameSocket } from '../types'
+import { GameSocket } from '../types'
 
 export class GameController {
     constructor(

@@ -1,8 +1,12 @@
 import { useAppContext } from '../contexts/AppContext/AppContext'
 import type { UserInfo } from 'shared'
+import { getCurrentPlayer } from '../contexts/AppContext/selectors'
 
 export function PlayersSidebar() {
     const { state } = useAppContext()
+    const otherPlayers = Object.values(state.gameState.players).filter(
+        player => player.id !== state.currentUserId
+    )
 
     return (
         <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
@@ -17,32 +21,34 @@ export function PlayersSidebar() {
             </div>
 
             <div className="flex-1 p-4 space-y-4">
-                {Object.values(state.gameState.players).length === 0 ? (
+                {otherPlayers.length === 0 ? (
                     <div className="text-center text-gray-500 mt-8">
                         <p className="text-sm">No other players yet</p>
-                        <p className="text-xs text-gray-400">Share the room to invite friends!</p>
+                        <p className="text-xs text-gray-400">Share the link to invite friends!</p>
                     </div>
                 ) : (
-                    Object.values(state.gameState.players).map(user => (
-                        <div key={user.id} className="flex items-start space-x-3">
+                    otherPlayers.map(player => (
+                        <div key={player.id} className="flex items-start space-x-3">
                             {/* Avatar */}
                             <div
                                 className="w-8 h-8 bg-gradient-to-br rounded-full flex items-center justify-center text-white text-sm font-medium"
-                                style={{ backgroundColor: user.color }}
+                                style={{ backgroundColor: player.color }}
                             >
-                                {user.name.charAt(0).toUpperCase()}
+                                {player.name.charAt(0).toUpperCase()}
                             </div>
 
                             {/* Typing Indicator */}
                             <div className="flex-1">
-                                <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                                {user.currentInput ? (
+                                <p className="text-sm font-medium text-gray-900">{player.name}</p>
+                                {player.currentInput ? (
                                     <div
                                         className="mt-1 bg-gray-100 rounded-lg p-2 border-l-2"
-                                        style={{ borderColor: user.color }}
+                                        style={{ borderColor: player.color }}
                                     >
-                                        <p className="text-xs text-gray-600">{user.currentInput}</p>
-                                        <p className="text-sm text-gray-800">{isTyping(user)}</p>
+                                        <p className="text-xs text-gray-600">
+                                            {player.currentInput}
+                                        </p>
+                                        <p className="text-sm text-gray-800">{isTyping(player)}</p>
                                     </div>
                                 ) : (
                                     <p className="text-xs text-gray-400">Ready to play</p>
@@ -53,21 +59,31 @@ export function PlayersSidebar() {
                 )}
             </div>
 
-            {/* Game Status */}
+            {/* Current Player Info */}
             <div className="p-4 border-t border-gray-200 bg-gray-50">
-                <div className="text-center">
-                    <p className="text-sm font-medium text-gray-900">Game Status</p>
-                    <div className="space-y-1">
-                        {!state.gameState.gameOver && (
-                            <>
-                                <p className="text-xs text-green-600">Playing!</p>
-                            </>
-                        )}
-                        {state.gameState.gameOver && (
-                            <p className="text-xs text-blue-600">Game over!</p>
-                        )}
+                {getCurrentPlayer(state) ? (
+                    <div className="flex items-center space-x-3 h-10">
+                        {/* Player Avatar */}
+                        <div
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
+                            style={{ backgroundColor: getCurrentPlayer(state)!.color }}
+                        >
+                            {getCurrentPlayer(state)!.name.charAt(0).toUpperCase()}
+                        </div>
+
+                        {/* Player Details */}
+                        <div className="flex-1">
+                            <p className="text-sm font-medium text-gray-900">
+                                {getCurrentPlayer(state)?.name ?? 'Unknown Player'}
+                            </p>
+                            <p className="text-xs text-gray-500">That's you!</p>
+                        </div>
                     </div>
-                </div>
+                ) : (
+                    <div className="text-center h-10 flex items-center justify-center">
+                        <p className="text-sm text-gray-500">Connecting...</p>
+                    </div>
+                )}
             </div>
         </div>
     )

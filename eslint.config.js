@@ -1,12 +1,14 @@
 import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
 import prettierConfig from 'eslint-config-prettier'
+import unusedImports from 'eslint-plugin-unused-imports'
 
 export default tseslint.config([
     {
         ignores: ['**/dist/**', '**/node_modules/**']
     },
     {
+        plugins: { 'unused-imports': unusedImports },
         files: ['**/*.{ts,tsx}'],
         extends: [js.configs.recommended, tseslint.configs.recommended],
         rules: {
@@ -27,7 +29,8 @@ export default tseslint.config([
                     ]
                 }
             ],
-            '@typescript-eslint/no-unused-vars': [
+            '@typescript-eslint/no-unused-vars': 'off',
+            'unused-imports/no-unused-vars': [
                 'error',
                 {
                     argsIgnorePattern: '^_',

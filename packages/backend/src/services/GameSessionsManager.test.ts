@@ -17,7 +17,8 @@ describe('GameDirector', () => {
             expect(session).toEqual({
                 secretWord: 'elephant',
                 wordCategory: 'animals',
-                questions: []
+                questions: [],
+                players: {}
             })
         })
 
@@ -28,7 +29,8 @@ describe('GameDirector', () => {
             expect(gameSessionsManager.getGameSession('room1')).toEqual({
                 secretWord: 'cat',
                 wordCategory: 'animals',
-                questions: []
+                questions: [],
+                players: {}
             })
         })
 
