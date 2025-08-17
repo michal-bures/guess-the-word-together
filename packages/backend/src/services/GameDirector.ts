@@ -47,7 +47,7 @@ export class GameDirector {
         }
     }
 
-    setGameOver(roomId: string, winnerId: string): void {
+    setGameOver(roomId: string, winnerId: string | null): void {
         const session = this.sessions.get(roomId)
         if (session) {
             session.gameOver = {

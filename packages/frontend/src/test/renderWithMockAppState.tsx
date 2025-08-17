@@ -8,18 +8,20 @@ export function renderWithMockAppState(
     component: React.ReactElement,
     state: AppState = mockAppState(),
     mockFunctions: Partial<
-        Pick<GameContextType, 'startNewRound' | 'sendQuestion' | 'updateQuestionInput'>
+        Pick<GameContextType, 'startNewRound' | 'sendQuestion' | 'updateQuestionInput' | 'giveUp'>
     > = {}
 ) {
     const fullState = mockAppState(state)
     const mockStartNewRound = vi.fn()
     const mockSendQuestion = vi.fn()
     const mockUpdateQuestionInput = vi.fn()
+    const mockGiveUp = vi.fn()
 
     const contextValue: GameContextType = {
         state: fullState,
         startNewRound: mockFunctions.startNewRound || mockStartNewRound,
         sendQuestion: mockFunctions.sendQuestion || mockSendQuestion,
+        giveUp: mockFunctions.giveUp || mockGiveUp,
         updateQuestionInput: mockFunctions.updateQuestionInput || mockUpdateQuestionInput
     }
 

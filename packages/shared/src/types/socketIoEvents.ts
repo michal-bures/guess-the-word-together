@@ -11,6 +11,7 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
     'ask-question': (data: { questionId: string; question: string }) => void
     'start-game': () => void
+    'give-up': () => void
 }
 
 export interface Answer {

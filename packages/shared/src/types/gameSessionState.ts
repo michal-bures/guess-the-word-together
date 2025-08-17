@@ -1,12 +1,11 @@
-
 export interface GameSessionState {
     wordCategory: string
-    questions: QuestionAnswerPair[],
+    questions: QuestionAnswerPair[]
     gameOver?: GameOverInfo //when present, indicates the game has ended
 }
 
 export interface GameOverInfo {
-    winnerId: string
+    winnerId: string | null // null = gave up, string = won
     secretWord: string
 }
 
@@ -18,4 +17,3 @@ export interface QuestionAnswerPair {
     isCorrectGuess?: boolean
     isError?: boolean
 }
-

@@ -5,6 +5,7 @@ export interface GameContextType {
     state: AppState
     sendQuestion: () => void
     startNewRound: () => void
+    giveUp: () => void
     updateQuestionInput: (input: string) => void
 }
 

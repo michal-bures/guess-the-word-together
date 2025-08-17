@@ -147,6 +147,20 @@ io.on('connection', async socket => {
         }
     })
 
+    // Handle give up
+    socket.on('give-up', () => {
+        const session = gameDirector.getGameSession(roomId)
+        if (!session) {
+            socket.emit('error', { message: 'No active game session' })
+            return
+        }
+
+        // Set game over with null winnerId to indicate give up
+        gameDirector.setGameOver(roomId, null)
+        io.to(roomId).emit('game-over', gameDirector.getGameSession(roomId)!.gameOver!)
+        console.log(`User ${socket.id} gave up in room ${roomId}. Secret word was: ${session.secretWord}`)
+    })
+
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id, 'Total users:', io.engine.clientsCount)
     })

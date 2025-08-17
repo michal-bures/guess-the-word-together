@@ -45,7 +45,7 @@ describe('GameStatusMessage', () => {
         renderWithMockAppState(<GameStatusMessage />, state)
 
         expect(screen.getByText('🎉 You guessed it!')).toBeInTheDocument()
-        expect(screen.getByText('The secret word was "elephant!".')).toBeInTheDocument()
+        expect(screen.getByText('The secret word was "elephant".')).toBeInTheDocument()
         expect(screen.getByText('Play Again')).toBeInTheDocument()
     })
 

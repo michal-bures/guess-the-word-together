@@ -4,18 +4,30 @@
   "description": "Collaborative word guessing game.",
   "type": "module",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "catalog": {
+      "eslint": "^9.33.0",
+      "prettier": "^3.6.2",
+      "typescript": "^5.9.2",
+      "typescript-eslint": "^8.39.1",
+      "vite": "^7.1.2",
+      "vitest": "^3.2.4",
+      "@eslint/js": "^9.33.0",
+      "eslint-config-prettier": "^10.1.8",
+      "@vitejs/plugin-react": "^5.0.0"
+    }
+  },
   "scripts": {
     "dev": "concurrently --names \"frontend,backend,shared\" \"bun run --filter=frontend dev\" \"bun run --filter=backend dev\" \"bun run --filter=shared dev\"",
-    "build": "bun run build --filter '*'",
-    "lint": "bun run lint --filter '*'",
-    "lint:check": "bun run lint:check --filter '*'",
-    "format": "bun run format --filter '*'",
-    "format:check": "bun run format:check --filter '*'",
-    "test": "bun run test --filter '*'",
-    "test:run": "bun run test:run --filter '*'"
+    "build": "bun run --filter '*' build",
+    "lint": "bun run  --filter '*' lint",
+    "lint:check": "bun run --filter '*' lint:check",
+    "format": "bun run --filter '*' format",
+    "format:check": "bun run --filter '*' format:check",
+    "test": "bun run --filter '*' test:run"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

@@ -8,6 +8,9 @@
     "build": "tsc",
     "dev": "tsc --watch"
   },
+  "devDependencies": {
+    "typescript": "catalog:"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC"

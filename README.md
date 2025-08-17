@@ -33,15 +33,23 @@ Players can see each other typing in real-time and ask yes/no questions to narro
 ## 🛠️ Tech Stack
 
 ### TODO
-- Switch from express to Koa or Buns built-in server or maybe Fastify?
-- Build container, setup CI/CD
 - Yjs collaboration with WebSocket
 - MCP API
 - Code splitting & lazy loading
 - Tracking test runtime duration, coverage
 - Tracking bundle size
+- Tagging & versioning releases
 
 ### Points of interest
+Dependency management:
+- Using buns `catalog` to unify dev dependency versions (such as typescript) across all packages 
+- Using `linkWorkspacePackages = true` to symlink local packages in monorepo to speedup and simplify development
+  - this also makes bun use a single central `node_modules` folder for all packages
+
+CI pipeline:
+- Building a single unified image for both frontend and backend
+- TODO: for better scaling & availability, static assets could be uploaded to CDN and served from there instead of the backend container
+
 Static typing:
 - [Typesafe action definitions](packages/frontend/src/contexts/AppContext/actions.ts)
 - [Typesafe websocket events protocol between frontend and backend](packages/shared/src/types/socketIoEvents.ts)
@@ -67,11 +75,14 @@ Building running, and testing:
     - can use bun as runtime (`bunx --bun vite`) for even faster builds
 - **[Vitest](https://vitest.dev/)** as unit test runner
   - alternatives: jest, bun
+  - with [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) as industry standard way to test React components
+  - with [happy-dom](https://github.com/capricorn86/happy-dom) as a much faster alternative to JSDOM
   - why vitest:
     - much faster for larger projects compared to jest
     - easy to use with Vite
     - jest-like API
     - more feature-complete than bun test runner
+- **[GitHub Actions](https://github.com/features/actions)** for CI/CD
 
 Libraries and frameworks:
 - **[Koa](https://koajs.com/)** as web server framework
@@ -89,6 +100,13 @@ Libraries and frameworks:
     - supports fallbacks to long-polling
     - easy to use with Yjs for real-time collaboration
 - **[Yjs](https://docs.yjs.dev/)** for real-time collaborative features
+  - 
+- **[Tailwind](https://tailwindcss.com/)** for styling
+  - alternatives: styled-components, emotion, CSS modules
+  - why Tailwind:
+    - ruthlessly efficient for rapid UI development
+    - but best to replace with proper UI framework for larger applications
+    
 - **React Context** for state management
   - alternatives: Redux, Zustand, MobX
   - why React Context:

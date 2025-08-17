@@ -109,12 +109,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
         }
     }
 
+    const giveUp = () => {
+        if (state.socket) {
+            state.socket.emit('give-up')
+        }
+    }
+
     const updateQuestionInput = (input: string) => {
         dispatch(Actions.setQuestionInput(input))
     }
 
     return (
-        <AppContext.Provider value={{ state, sendQuestion, startNewRound, updateQuestionInput }}>
+        <AppContext.Provider value={{ state, sendQuestion, startNewRound, giveUp, updateQuestionInput }}>
             {children}
         </AppContext.Provider>
     )

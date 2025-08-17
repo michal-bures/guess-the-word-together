@@ -29,9 +29,10 @@ function getStatusMessage(state: AppState) {
             subtitle: 'Trying to restore connection to the server.'
         }
     } else if (state.gameState.gameOver) {
+        const isWin = state.gameState.gameOver.winnerId !== null
         return {
-            title: `🎉 You guessed it!`,
-            subtitle: `The secret word was "${state.gameState.gameOver.secretWord}!".`
+            title: isWin ? `🎉 You guessed it!` : `😔 Better luck next time!`,
+            subtitle: `The secret word was "${state.gameState.gameOver.secretWord}".`
         }
     } else {
         return {

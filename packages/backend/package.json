@@ -19,6 +19,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "shared": "workspace:*",
         "@koa/cors": "^5.0.0",
         "@types/ws": "^8.18.1",
         "@y/websocket-server": "^0.1.1",
@@ -27,24 +28,23 @@
         "koa-bodyparser": "^4.4.1",
         "koa-static": "^5.0.0",
         "ollama": "^0.5.10",
-        "shared": "file:../shared",
         "socket.io": "^4.8.1",
         "ws": "^8.18.3",
         "y-websocket": "^2.0.4",
         "yjs": "^13.6.20"
     },
     "devDependencies": {
-        "@eslint/js": "^9.33.0",
+        "@eslint/js": "catalog:",
         "@types/koa": "^2.15.0",
         "@types/koa__cors": "^5.0.0",
         "@types/koa-bodyparser": "^4.3.12",
         "@types/koa-static": "^4.0.4",
         "@types/node": "^24.3.0",
-        "eslint": "^9.33.0",
-        "eslint-config-prettier": "^10.1.8",
-        "prettier": "^3.6.2",
-        "typescript": "^5.9.2",
-        "typescript-eslint": "^8.39.1",
-        "vitest": "^3.2.4"
+        "eslint": "catalog:",
+        "eslint-config-prettier": "catalog:",
+        "prettier": "catalog:",
+        "typescript": "catalog:",
+        "typescript-eslint": "catalog:",
+        "vitest": "catalog:"
     }
 }
