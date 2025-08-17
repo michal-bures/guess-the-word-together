@@ -25,6 +25,7 @@ async function startServer(): Promise<void> {
         const io = createSocketServer(httpServer)
         const gameController = await createGameController(io)
         io.on('connection', async (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
+            console.log('new connection:', socket.id, socket.client.conn.remoteAddress)
             const roomId = config.defaultRoomId
             // Delegate connection handling to controller
             await gameController.handleConnection(socket, roomId)

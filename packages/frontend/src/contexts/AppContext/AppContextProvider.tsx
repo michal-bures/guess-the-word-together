@@ -4,6 +4,8 @@ import type { AppState, TypedSocket } from './types'
 import { reducer } from './reducer'
 import { io } from 'socket.io-client'
 import { AppContext } from './AppContext'
+import { useToast } from '../../hooks/useToast'
+import ErrorToast from '../../components/ErrorToast'
 
 const initialState: AppState = {
     socket: null,
@@ -19,6 +21,7 @@ const initialState: AppState = {
 
 export function GameProvider({ children }: { children: ReactNode }) {
     const [state, dispatch] = useReducer(reducer, initialState)
+    const { toasts, showError, removeToast } = useToast()
 
     // Create a ref to store the current state for debugging
     const stateRef = useRef(state)
@@ -52,15 +55,26 @@ export function GameProvider({ children }: { children: ReactNode }) {
             console.log('Connected to server')
         })
 
-        newSocket.on('disconnect', () => {
+        newSocket.on('disconnect', reason => {
             dispatch(Actions.setConnectionState({ connected: false, userId: '' }))
-            console.log('Disconnected from server')
+            console.log('Disconnected from server:', reason)
+            if (reason === 'transport error' || reason === 'ping timeout') {
+                showError('Connection lost. Trying to reconnect...')
+            }
         })
 
         // Handle question answers
         newSocket.on(
             'question-answered',
-            (data: { questionId: string; answer: string; isCorrectGuess: boolean }) => {
+            (data: {
+                questionId: string
+                answer: string
+                isCorrectGuess: boolean
+                isError?: boolean
+            }) => {
+                if (data.isError) {
+                    showError('Error processing your question. Please try again later.')
+                }
                 dispatch(
                     Actions.addAnswer({
                         questionId: data.questionId,
@@ -83,7 +97,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         return () => {
             newSocket.close()
         }
-    }, [])
+    }, [showError])
 
     const sendQuestion = () => {
         if (state.socket && state.questionInput.trim()) {
@@ -125,6 +139,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
             value={{ state, sendQuestion, startNewRound, giveUp, updateQuestionInput }}
         >
             {children}
+            {toasts.map(toast => (
+                <ErrorToast
+                    key={toast.id}
+                    message={toast.message}
+                    onClose={() => removeToast(toast.id)}
+                />
+            ))}
         </AppContext.Provider>
     )
 }
