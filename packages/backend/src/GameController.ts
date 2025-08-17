@@ -127,7 +127,6 @@ export class GameController {
             question,
             userId: socket.id!
         })
-        this.gameSessions.updateUserTyping(roomId, socket.id!, '')
         this.io.to(roomId).emit('question-updated', {
             id: questionId,
             question: question,

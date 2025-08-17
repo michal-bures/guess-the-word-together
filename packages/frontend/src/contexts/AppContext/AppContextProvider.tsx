@@ -46,6 +46,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
                 question: sanitizedQuestion
             })
             dispatch(Actions.setQuestionInput(''))
+            state.socket.emit('typing', '')
         }
     }
 
