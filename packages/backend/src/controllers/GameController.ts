@@ -6,6 +6,58 @@ import { gameSessionsManager } from '../services/GameSessionsManager'
 export class GameController {
     constructor(private io: Server<ClientToServerEvents, ServerToClientEvents>) {}
 
+    async handleConnection(
+        socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+        roomId: string
+    ): Promise<void> {
+        console.log('User connected:', socket.id, 'Total users:', this.io.engine.clientsCount)
+
+        // Join room
+        socket.join(roomId)
+
+        // Send current state or start new game
+        const currentGameState = this.getCurrentGameState(roomId)
+        if (currentGameState) {
+            socket.emit('game-state-sync', currentGameState)
+        } else {
+            await this.startNewGame(roomId, socket)
+        }
+
+        // Handle questions
+        socket.on('ask-question', async (data: { questionId: string; question: string }) => {
+            try {
+                await this._handleQuestion({
+                    roomId,
+                    questionId: data.questionId,
+                    question: data.question,
+                    socket
+                })
+            } catch (error) {
+                console.error('Error handling question:', error)
+                socket.emit('error', { message: 'Failed to process question' })
+            }
+        })
+
+        // Handle give up
+        socket.on('give-up', () => {
+            try {
+                this._handleGiveUp(roomId, socket.id!)
+            } catch (error) {
+                console.error('Error handling give up:', error)
+                socket.emit('error', { message: 'No active game session' })
+            }
+        })
+
+        // Handle disconnection
+        socket.on('disconnect', () => {
+            this._handleDisconnection(socket.id!)
+        })
+    }
+
+    _handleDisconnection(socketId: string): void {
+        console.log('User disconnected:', socketId, 'Total users:', this.io.engine.clientsCount)
+    }
+
     async startNewGame(
         roomId: string,
         socket: Socket<ClientToServerEvents, ServerToClientEvents>
@@ -30,15 +82,14 @@ export class GameController {
         }
     }
 
-    async handleQuestion(params: {
+    async _handleQuestion(params: {
         roomId: string
         questionId: string
         question: string
-        userId: string
         socket: Socket<ClientToServerEvents, ServerToClientEvents>
     }): Promise<void> {
-        const { roomId, questionId, question, userId, socket } = params
-        
+        const { roomId, questionId, question, socket } = params
+
         const session = gameSessionsManager.getGameSession(roomId)
         if (!session) {
             await this.startNewGame(roomId, socket)
@@ -48,7 +99,7 @@ export class GameController {
         gameSessionsManager.addQuestionToSession(roomId, {
             id: questionId,
             question,
-            userId
+            userId: socket.id!
         })
 
         const aiResponse = await wordGameAI.answerQuestion(question, session.secretWord)
@@ -65,14 +116,14 @@ export class GameController {
 
         if (aiResponse.isCorrectGuess) {
             // Game over!
-            gameSessionsManager.setGameOver(roomId, userId)
+            gameSessionsManager.setGameOver(roomId, socket.id!)
             this.io
                 .to(roomId)
                 .emit('game-over', gameSessionsManager.getGameSession(roomId)!.gameOver!)
         }
     }
 
-    handleGiveUp(roomId: string, userId: string): void {
+    _handleGiveUp(roomId: string, userId: string): void {
         const session = gameSessionsManager.getGameSession(roomId)
         if (!session) {
             throw new Error('No active game session')
@@ -97,9 +148,5 @@ export class GameController {
             questions: currentSession.questions,
             gameOver: currentSession.gameOver
         }
-    }
-
-    joinRoom(socket: Socket<ClientToServerEvents, ServerToClientEvents>, roomId: string): void {
-        socket.join(roomId)
     }
 }

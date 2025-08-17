@@ -1,8 +1,10 @@
 import { createServer } from 'http'
 import { createKoaApp, createSocketServer } from './server'
-import { setupGameSocketHandlers } from './sockets/gameSocketHandler'
 import { createYjsWebSocketServer } from './websocket/yjsServer'
 import { config } from './config'
+import type { Socket } from 'socket.io'
+import type { ClientToServerEvents, ServerToClientEvents } from 'shared'
+import { GameController } from './controllers/GameController'
 
 async function startServer(): Promise<void> {
     try {
@@ -12,7 +14,12 @@ async function startServer(): Promise<void> {
 
         // Create and setup Socket.io server
         const io = createSocketServer(httpServer)
-        setupGameSocketHandlers(io)
+        const gameController = new GameController(io)
+        io.on('connection', async (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
+            const roomId = config.defaultRoomId
+            // Delegate connection handling to controller
+            await gameController.handleConnection(socket, roomId)
+        })
 
         // Create Yjs WebSocket server
         createYjsWebSocketServer()
@@ -38,7 +45,6 @@ async function startServer(): Promise<void> {
                 process.exit(0)
             })
         })
-
     } catch (error) {
         console.error('Failed to start server:', error)
         process.exit(1)
