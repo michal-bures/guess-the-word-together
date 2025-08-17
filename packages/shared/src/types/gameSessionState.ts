@@ -26,3 +26,10 @@ export interface QuestionAnswerPair {
     isCorrectGuess?: boolean
     isError?: boolean
 }
+
+export interface Answer {
+    questionId: string
+    answer: string
+    isError?: boolean
+    isCorrectGuess: boolean
+}

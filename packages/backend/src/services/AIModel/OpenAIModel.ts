@@ -17,7 +17,6 @@ export class OpenAIModel implements AIModel {
             temperature: query.temperature,
             top_p: query.topP
         })
-        const rawAnswer = response.choices[0]?.message?.content?.trim() || 'Unclear'
-        return rawAnswer
+        return response.choices[0]?.message?.content?.trim() || 'Unclear'
     }
 }

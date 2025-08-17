@@ -18,10 +18,3 @@ export interface ClientToServerEvents {
     'start-game': () => void
     'give-up': () => void
 }
-
-export interface Answer {
-    questionId: string
-    answer: string
-    isError?: boolean
-    isCorrectGuess: boolean
-}

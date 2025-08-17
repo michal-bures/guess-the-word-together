@@ -1,17 +1,15 @@
 # Guess the Word Together
 
-A playground for a bunch of tech used for developing react SPA featuring real-time collaboration.
+A tech demo for modern SPA setup in the form of a collaborative word guessing game. Players work together to guess 
+a secret word chosen by AI. Players can see each other typing in real-time and ask yes/no questions to narrow down the possibilities.
 
-A collaborative multiplayer word guessing game where players work together to guess a secret word chosen by AI.
-Players can see each other typing in real-time and ask yes/no questions to narrow down the possibilities.
-
-Try it at https://guess-the-word-together.onrender.com/
+Play it at https://guess-the-word-together.onrender.com/.
 
 ## Running locally
 
 Requires:
 - **Bun** v1.0+
-- **AI Provider**: Choose either OpenAI API (cloud) or Ollama (local)
+- **Generative AI Provider**: You can either connect to OpenAI API (model `gpt-4o-mini`), or to a locally running AI model using [Ollama](https://ollama.com/) (model `llama3.2:3b`).
 
 ### Option 1: Using OpenAI API
 ```bash
@@ -111,7 +109,7 @@ Libraries and frameworks:
   - why Fastify:
     - built-in schema validation and serialization
 - **[Socket.io](https://socket.io/)** for real-time communication
-  - alternatives: ws, bun websocket, deno websocket
+  - alternatives: Pusher, Yjs, REST+SSE, WebRTC, Ably Pub/Sub
   - why socket.io:
     - mature ecosystem with many features out of the box
     - supports fallbacks to long-polling
