@@ -3,7 +3,10 @@ import { createServer } from 'http'
 import { Server, Socket } from 'socket.io'
 import cors from '@koa/cors'
 import bodyParser from 'koa-bodyparser'
+import serve from 'koa-static'
 import { WebSocketServer } from 'ws'
+import path from 'path'
+import fs from 'fs'
 import { wordGameAI } from './services/WordGameAI'
 import { gameDirector } from './services/GameDirector'
 import type { ClientToServerEvents, ServerToClientEvents } from 'shared'
@@ -13,16 +16,52 @@ const server = createServer(app.callback())
 
 app.use(
     cors({
-        origin: 'http://localhost:5173',
+        origin: process.env.FRONTEND_URL || 'http://localhost:5173',
         credentials: true
     })
 )
 
 app.use(bodyParser())
 
+// Serve static frontend files
+const frontendPath = path.join(__dirname, '../../frontend/dist')
+app.use(serve(frontendPath))
+
+// Health check endpoint for Docker
+app.use(async (ctx, next) => {
+    if (ctx.path === '/health') {
+        ctx.status = 200
+        ctx.body = { status: 'ok', timestamp: new Date().toISOString() }
+        return
+    }
+    await next()
+})
+
+// SPA fallback - serve index.html for non-API routes that don't match static files
+app.use(async (ctx, next) => {
+    // Skip API routes and Socket.IO
+    if (ctx.path.startsWith('/api') || ctx.path.startsWith('/socket.io') || ctx.path === '/health') {
+        await next()
+        return
+    }
+    
+    // For non-API routes that don't have file extensions, serve index.html (SPA routing)
+    if (!ctx.path.includes('.') && ctx.method === 'GET') {
+        try {
+            ctx.type = 'html'
+            ctx.body = fs.readFileSync(path.join(frontendPath, 'index.html'))
+        } catch (error) {
+            console.warn('Could not serve index.html:', error)
+            await next()
+        }
+    } else {
+        await next()
+    }
+})
+
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
     cors: {
-        origin: 'http://localhost:5173',
+        origin: process.env.FRONTEND_URL || 'http://localhost:5173',
         methods: ['GET', 'POST'],
         credentials: true
     }
@@ -114,7 +153,8 @@ io.on('connection', async socket => {
 })
 
 // Set up Yjs WebSocket server
-const wss = new WebSocketServer({ port: 1234 })
+const WS_PORT = parseInt(process.env.WS_PORT || '1234')
+const wss = new WebSocketServer({ port: WS_PORT })
 
 wss.on('connection', (_ws, _req) => {
     //TODO
@@ -122,5 +162,5 @@ wss.on('connection', (_ws, _req) => {
 
 server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`)
-    console.log(`Yjs WebSocket server running on ws://localhost:1234`)
+    console.log(`Yjs WebSocket server running on ws://localhost:${WS_PORT}`)
 })

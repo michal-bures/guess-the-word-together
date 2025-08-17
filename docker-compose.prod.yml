@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  # Unified application service for production
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"  # Main app (frontend + backend)
+      - "1234:1234"  # WebSocket server
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - WS_PORT=1234
+      - FRONTEND_URL=http://localhost:3001
+    restart: unless-stopped
+
+networks:
+  default:
+    name: guess-the-word-production

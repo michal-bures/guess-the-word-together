@@ -1,0 +1,51 @@
+# Dependencies
+node_modules
+*/node_modules
+*.log
+npm-debug.log*
+
+# Build outputs
+*/dist
+*/build
+*/coverage
+
+# Development files
+.env
+.env.*
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+__tests__
+*/*.tsbuildinfo
+
+# Version control
+.git
+.gitignore
+.github
+
+# Documentation
+README.md
+*.md
+docs
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker files
+Dockerfile*
+docker-compose*
+.dockerignore
