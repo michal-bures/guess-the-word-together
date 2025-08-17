@@ -36,9 +36,12 @@ export function PlayersSidebar() {
                             {/* Typing Indicator */}
                             <div className="flex-1">
                                 <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                                {isTyping(user) ? (
-                                    <div className="mt-1 bg-gray-100 rounded-lg p-2 border-l-2 border-blue-400">
-                                        <p className="text-xs text-gray-600">typing...</p>
+                                {user.currentInput ? (
+                                    <div
+                                        className="mt-1 bg-gray-100 rounded-lg p-2 border-l-2"
+                                        style={{ borderColor: user.color }}
+                                    >
+                                        <p className="text-xs text-gray-600">{user.currentInput}</p>
                                         <p className="text-sm text-gray-800">{isTyping(user)}</p>
                                     </div>
                                 ) : (

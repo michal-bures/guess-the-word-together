@@ -62,6 +62,12 @@ export class GameController {
             await this.startNewGame(roomId, socket)
         })
 
+        // Handle user typing
+        socket.on('typing', (input: string) => {
+            this.gameSessions.updateUserTyping(roomId, socket.id!, input)
+            this.io.to(roomId).emit('user-typing', { userId: socket.id, input })
+        })
+
         // Handle disconnection
         socket.on('disconnect', () => {
             this._handleDisconnection(roomId, socket.id!)
@@ -121,6 +127,11 @@ export class GameController {
             question,
             userId: socket.id!
         })
+        this.io.to(roomId).emit('question-updated', {
+            id: questionId,
+            question: question,
+            userId: socket.id!
+        })
 
         const aiResponse = await this.ai.answerQuestion(question, session.secretWord)
 
@@ -129,8 +140,10 @@ export class GameController {
             isCorrectGuess: aiResponse.isCorrectGuess
         })
 
-        socket.emit('question-answered', {
-            questionId,
+        this.io.to(roomId).emit('question-updated', {
+            id: questionId,
+            question: question,
+            userId: socket.id!,
             ...aiResponse
         })
 

@@ -3,6 +3,7 @@ import { QuestionBubble } from './QuestionBubble'
 import { GameStatusMessage } from '../GameStatusMessage'
 import { useScrollToBottom } from '../../hooks/useScrollToBottom'
 import { useEffect, useRef } from 'react'
+import type { QuestionAnswerPair, UserInfo } from 'shared'
 
 export function QuestionsBoard() {
     const { state } = useAppContext()
@@ -19,11 +20,19 @@ export function QuestionsBoard() {
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 flex flex-col">
             <div className="flex flex-wrap gap-3">
                 {state.gameState.questions.map(question => (
-                    <QuestionBubble key={question.id} question={question} />
+                    <QuestionBubble
+                        key={question.id}
+                        question={question}
+                        color={getQuestionColor(question, state.gameState.players)}
+                    />
                 ))}
             </div>
 
             <GameStatusMessage />
         </div>
     )
+}
+
+function getQuestionColor(question: QuestionAnswerPair, players: Record<string, UserInfo>): string {
+    return players[question.userId]?.color || '#aaa' // Default color if user not found
 }

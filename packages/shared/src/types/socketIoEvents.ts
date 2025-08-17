@@ -1,15 +1,15 @@
 // Socket.IO event types
-import { GameOverInfo, GameSessionState, UserInfo } from './gameSessionState'
+import { GameOverInfo, GameSessionState, QuestionAnswerPair, UserInfo } from './gameSessionState'
 
 export interface ServerToClientEvents {
-    'question-answered': (data: Answer) => void
+    'question-updated': (data: QuestionAnswerPair) => void
     'game-over': (data: GameOverInfo) => void
     'game-state-sync': (data: GameSessionState) => void
     error: (data: { message: string }) => void
 
     'user-joined': (data: UserInfo) => void
     'user-left': (data: { userId: string }) => void
-    'user-typing': (data: { userId: string; typing: boolean }) => void
+    'user-typing': (data: { userId: string; input: string }) => void
 }
 
 export interface ClientToServerEvents {

@@ -9,11 +9,13 @@ export class GameSessionsManager {
         console.log(
             `Starting new game in room ${roomId} with secret word ${secretWord} (category: ${category})`
         )
+        const players = this.sessions.get(roomId)?.players || {}
+
         const newSession: BackendGameSessionState = {
             secretWord: secretWord,
             wordCategory: category,
             questions: [],
-            players: {}
+            players: players
         }
         this.sessions.set(roomId, newSession)
         return newSession
@@ -92,6 +94,21 @@ export class GameSessionsManager {
             delete session.players[userId]
         } else {
             console.warn(`No active session found for room ${roomId} to remove user ${userId}`)
+        }
+    }
+
+    updateUserTyping(roomId: string, s: string, input: string) {
+        const session = this.sessions.get(roomId)
+        if (session) {
+            const user = session.players[s]
+            if (user) {
+                user.currentInput = input
+                user.lastTyped = Date.now()
+            } else {
+                console.warn(`User ${s} not found in session ${roomId}`)
+            }
+        } else {
+            console.warn(`No active session found for room ${roomId} to update typing state`)
         }
     }
 }

@@ -5,7 +5,9 @@ import { reducer } from './reducer'
 import { io } from 'socket.io-client'
 import { AppContext } from './AppContext'
 import { useToast } from '../../hooks/useToast'
+import { useDebounce } from '../../hooks/useDebounce'
 import ErrorToast from '../../components/ErrorToast'
+import type { QuestionAnswerPair } from 'shared'
 
 const initialState: AppState = {
     socket: null,
@@ -22,6 +24,11 @@ const initialState: AppState = {
 export function AppContextProvider({ children }: { children: ReactNode }) {
     const [state, dispatch] = useReducer(reducer, initialState)
     const { toasts, showError, removeToast } = useToast()
+
+    // Debounced typing emit - fires at most once per second
+    const debouncedTypingEmit = useDebounce((input: string) => {
+        state.socket?.emit('typing', input.trim())
+    }, 250)
 
     // Create a ref to store the current state for debugging
     const stateRef = useRef(state)
@@ -60,27 +67,27 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             console.log('Disconnected from server:', reason)
         })
 
-        // Handle question answers
-        newSocket.on(
-            'question-answered',
-            (data: {
-                questionId: string
-                answer: string
-                isCorrectGuess: boolean
-                isError?: boolean
-            }) => {
-                if (data.isError) {
-                    showError('Error processing your question. Please try again later.')
-                }
-                dispatch(
-                    Actions.addAnswer({
-                        questionId: data.questionId,
-                        answer: data.answer,
-                        isCorrectGuess: data.isCorrectGuess
-                    })
-                )
+        // Handle new questions
+        newSocket.on('question-updated', (data: QuestionAnswerPair) => {
+            dispatch(Actions.addQuestion(data))
+            if (!data.answer) {
+                //user just asked a question => clear their input
+                dispatch(Actions.setUserTyping({ userId: data.userId, input: '' }))
             }
-        )
+        })
+
+        // Handle user typing
+        newSocket.on('user-typing', data => {
+            dispatch(Actions.setUserTyping({ userId: data.userId, input: data.input }))
+        })
+
+        newSocket.on('user-joined', data => {
+            dispatch(Actions.addPlayer(data))
+        })
+
+        newSocket.on('user-left', data => {
+            dispatch(Actions.removePlayer(data))
+        })
 
         // Handle game won
         newSocket.on('game-over', data => {
@@ -129,6 +136,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
 
     const updateQuestionInput = (input: string) => {
         dispatch(Actions.setQuestionInput(input))
+        debouncedTypingEmit(input)
     }
 
     return (

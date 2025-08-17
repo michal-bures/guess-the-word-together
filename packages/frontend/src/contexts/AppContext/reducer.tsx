@@ -21,14 +21,28 @@ export function reducer(state: AppState, action: Action): AppState {
                     gameOver: action.payload
                 }
             }
-        case Actions.addQuestion.type:
-            return {
-                ...state,
-                gameState: {
-                    ...state.gameState,
-                    questions: [...state.gameState.questions, action.payload]
+        case Actions.addQuestion.type: {
+            const existingQuestion = state.gameState.questions.find(q => q.id === action.payload.id)
+            if (existingQuestion) {
+                return {
+                    ...state,
+                    gameState: {
+                        ...state.gameState,
+                        questions: state.gameState.questions.map(q =>
+                            q.id === action.payload.id ? action.payload : q
+                        )
+                    }
+                }
+            } else {
+                return {
+                    ...state,
+                    gameState: {
+                        ...state.gameState,
+                        questions: [...state.gameState.questions, action.payload]
+                    }
                 }
             }
+        }
         case Actions.addAnswer.type:
             return {
                 ...state,
@@ -52,6 +66,44 @@ export function reducer(state: AppState, action: Action): AppState {
             }
         case Actions.setQuestionInput.type:
             return { ...state, questionInput: action.payload }
+        case Actions.setUserTyping.type: {
+            const userExists = Object.hasOwn(state.gameState.players, action.payload.userId)
+            if (!userExists) return state
+            return {
+                ...state,
+                gameState: {
+                    ...state.gameState,
+                    players: {
+                        ...state.gameState.players,
+                        [action.payload.userId]: {
+                            ...state.gameState.players[action.payload.userId],
+                            currentInput: action.payload.input
+                        }
+                    }
+                }
+            }
+        }
+        case Actions.addPlayer.type:
+            return {
+                ...state,
+                gameState: {
+                    ...state.gameState,
+                    players: {
+                        ...state.gameState.players,
+                        [action.payload.id]: action.payload
+                    }
+                }
+            }
+        case Actions.removePlayer.type: {
+            const { [action.payload.userId]: _, ...remainingPlayers } = state.gameState.players
+            return {
+                ...state,
+                gameState: {
+                    ...state.gameState,
+                    players: remainingPlayers
+                }
+            }
+        }
         default:
             return state
     }

@@ -1,4 +1,4 @@
-import type { Answer, GameOverInfo, GameSessionState, QuestionAnswerPair } from 'shared'
+import type { Answer, GameOverInfo, GameSessionState, QuestionAnswerPair, UserInfo } from 'shared'
 import type { TypedSocket } from './types'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -23,5 +23,8 @@ export const Actions = {
     setQuestionInput: createAction<string>()('SET_QUESTION_INPUT'),
     addAnswer: createAction<Answer>()('ADD_ANSWER'),
     setGameOver: createAction<GameOverInfo>()('SET_GAME_OVER'),
-    syncGameSessionState: createAction<GameSessionState>()('SET_GAME_SESSION_STATE')
+    syncGameSessionState: createAction<GameSessionState>()('SET_GAME_SESSION_STATE'),
+    setUserTyping: createAction<{ userId: string; input: string }>()('SET_USER_TYPING'),
+    addPlayer: createAction<UserInfo>()('ADD_PLAYER'),
+    removePlayer: createAction<{ userId: string }>()('REMOVE_PLAYER')
 }
