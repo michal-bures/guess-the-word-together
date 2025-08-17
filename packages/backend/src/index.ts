@@ -1,24 +1,24 @@
-import express from 'express'
+import Koa from 'koa'
 import { createServer } from 'http'
 import { Server, Socket } from 'socket.io'
-import cors from 'cors'
+import cors from '@koa/cors'
+import bodyParser from 'koa-bodyparser'
 import { WebSocketServer } from 'ws'
 import { wordGameAI } from './services/WordGameAI'
 import { gameDirector } from './services/GameDirector'
 import type { ClientToServerEvents, ServerToClientEvents } from 'shared'
 
-const app = express()
-const server = createServer(app)
+const app = new Koa()
+const server = createServer(app.callback())
 
 app.use(
     cors({
         origin: 'http://localhost:5173',
-        methods: ['GET', 'POST'],
         credentials: true
     })
 )
 
-app.use(express.json())
+app.use(bodyParser())
 
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
     cors: {

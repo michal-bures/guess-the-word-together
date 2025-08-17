@@ -46,57 +46,51 @@ Static typing:
 - [Typesafe action definitions](packages/frontend/src/contexts/AppContext/actions.ts)
 - [Typesafe websocket events protocol between frontend and backend](packages/shared/src/types/socketIoEvents.ts)
 
-### Package manager for monorepo
-**Bun**
+### Tech stack choices
 
-Alternatives:
-- npm
-  - Nx
-  - Turborepo
+Building running, and testing:
+- **[Bun](https://bun.com/)** as package manager for monorepo, server runtime and test runtime
+  - package manager alternatives: pnpm, nx, turborepo
+  - server runtime alternatives: node.js, deno
+  - why bun: 
+    - by far the fastest package manager compared to all alternatives
+    - also the fastest server runtime
+    - built-in TypeScript support
+    - compared to deno: 
+        - better compatibility with npm packages
+        - better performance
+- **[Vite](https://vite.dev/)** as bundler and dev server for frontend
+  - alternatives: bun, webpack, rollup, esbuild, parcel
+  - why vite:
+    - fast hot module replacement
+    - more feature-complete for React applications then bun
+    - can use bun as runtime (`bunx --bun vite`) for even faster builds
+- **[Vitest](https://vitest.dev/)** as unit test runner
+  - alternatives: jest, bun
+  - why vitest:
+    - much faster for larger projects compared to jest
+    - easy to use with Vite
+    - jest-like API
+    - more feature-complete than bun test runner
 
-- pnpm
-
-### Bundler
-
-**Vite**
-
-Alternatives:
-- Bun
-- Esbuild
-- Webpack
-- Rollup
-- Parcel
-
-### Linting and formatting
-
-**ESLint (+ typescript-eslint) + Prettier**
-
-Alternatives:
-- Biome - a new all-in-one tool, but ecosystem of plugins is not mature yet
-
-### Server
-- **Bun** (TODO)
-
-Alternatives:
-- Express
-- Koa
-- Fastify
-
-### Frontend State Management
-plain react context & useReducer + lightweight custom wrapper for defining actions and reducers
-
-Alternatives:
-- Redux Toolkit
-- Zustand
-
-### Realtime collaboration
-- **Yjs** for real-time collaborative features
-- **socket.io** for websockets (+ fallback to long-polling)
-
-
-## 🐛 Troubleshooting
-
-### "Connection refused" errors
-- Make sure Ollama is running: `ollama serve`
-- Check if the model is installed: `ollama list`
-- Verify Ollama is on port 11434: `curl http://localhost:11434`
+Libraries and frameworks:
+- **[Koa](https://koajs.com/)** as web server framework
+  - alternatives: express, fastify, bun built-in server
+  - why Koa:
+    - modern async/await syntax and better performance compared to express
+  - why Express:
+    - the most mature ecosystem with many middleware options
+  - why Fastify:
+    - built-in schema validation and serialization
+- **[Socket.io](https://socket.io/)** for real-time communication
+  - alternatives: ws, bun websocket, deno websocket
+  - why socket.io:
+    - mature ecosystem with many features out of the box
+    - supports fallbacks to long-polling
+    - easy to use with Yjs for real-time collaboration
+- **[Yjs](https://docs.yjs.dev/)** for real-time collaborative features
+- **React Context** for state management
+  - alternatives: Redux, Zustand, MobX
+  - why React Context:
+    - simple and lightweight for smaller applications
+    - no additional dependencies
