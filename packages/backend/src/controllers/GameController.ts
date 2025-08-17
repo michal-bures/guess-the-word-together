@@ -48,7 +48,7 @@ export class GameController {
                 this._handleGiveUp(roomId, socket.id!)
             } catch (error) {
                 console.error('Error handling give up:', error)
-                socket.emit('error', { message: 'No active game session' })
+                socket.emit('error', { message: 'Failed to end round' })
             }
         })
 
