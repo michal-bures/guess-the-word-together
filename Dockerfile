@@ -28,6 +28,7 @@ RUN cd packages/backend && bun run build
 FROM base AS release
 COPY package.json bun.lockb* ./
 COPY packages/backend/package.json ./packages/backend/
+COPY packages/shared/package.json ./packages/shared/
 
 # Install only production dependencies
 RUN bun install --frozen-lockfile --production
