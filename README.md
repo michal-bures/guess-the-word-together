@@ -45,7 +45,6 @@ Requires:
 ## 🛠️ Tech Stack
 
 ### TODO
-- Simplify types sharing to not require build step?
 - Evaluate Yjs or other libraries for real-time collaboration?
 - Test out code splitting & lazy loading
 - Investigate ways to track test runtime duration, coverage, bundle size and similar metrics over time
@@ -66,8 +65,12 @@ CI pipeline:
 - Note: For better scaling & availability, static assets could be uploaded to CDN and served from there instead 
   of being part of the docker container
 
-Type safety:
-- The `shared` package is use to define a [typesafe websocket protocol](packages/shared/src/types/socketIoEvents.ts) between frontend and backend
+The Internal `shared` package:
+- The `shared` package is a pure typescript package with no transpilation step, intended primarily  
+  for sharing types between frontend and backend.
+- This approach is also known as ["just-in-time" package](https://turborepo.com/docs/core-concepts/internal-packages), because the transpilation
+  from typescript is delegated to the consuming packages (frontend and backend).
+- Currently it's main use is to define a [typesafe websocket protocol](packages/shared/src/types/socketIoEvents.ts) between frontend and backend.
 
 ### Technical choices
 

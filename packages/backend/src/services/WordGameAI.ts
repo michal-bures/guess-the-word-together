@@ -29,7 +29,7 @@ export class WordGameAI {
 
     async categorizeWord(word: string): Promise<string> {
         const prompt = `What category does the word "${word}" belong to? 
-    Choose from: living thing, object, place, food, vehicle, nature, technology, other.
+    Choose from: living thing, object, place, food, vehicle, nature, technology.
     Return only the category name.`
 
         try {
@@ -39,9 +39,9 @@ export class WordGameAI {
                 temperature: 0.1
             })
 
-            return response.trim().toLowerCase() || 'unknown'
+            return response.trim().toLowerCase() || 'secret word'
         } catch (_error) {
-            return 'unknown'
+            return 'secret word'
         }
     }
 

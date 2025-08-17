@@ -23,13 +23,15 @@
     }
   },
   "scripts": {
-    "dev": "concurrently --names \"frontend,backend,shared\" \"bun run --filter=frontend dev\" \"bun run --filter=backend dev\" \"bun run --filter=shared dev\"",
+    "dev": "concurrently --names \"frontend,backend\" \"bun run --filter=frontend dev\" \"bun run --filter=backend dev\"",
     "build": "bun run --filter '*' build",
     "lint": "bun run  --filter '*' lint",
     "lint:check": "bun run --filter '*' lint:check",
     "format": "bun run --filter '*' format",
     "format:check": "bun run --filter '*' format:check",
-    "test": "bun run --filter '*' test:run"
+    "test": "bun run --filter '*' test:run",
+    "checks": "bun run lint && bun run format && bun run test",
+    "checks:ci": "bun run lint:check && bun run format:check && bun run test"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
