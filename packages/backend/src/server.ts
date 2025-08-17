@@ -56,7 +56,9 @@ export function createKoaApp(): Koa {
     return app
 }
 
-export function createSocketServer(httpServer: ReturnType<typeof createServer>): Server<ClientToServerEvents, ServerToClientEvents> {
+export function createSocketServer(
+    httpServer: ReturnType<typeof createServer>
+): Server<ClientToServerEvents, ServerToClientEvents> {
     return new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
         cors: socketCorsConfig
     })

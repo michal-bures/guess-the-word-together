@@ -10,6 +10,6 @@ export function createYjsWebSocketServer(): WebSocketServer {
     })
 
     console.log(`Yjs WebSocket server running on ws://localhost:${config.wsPort}`)
-    
+
     return wss
 }
