@@ -36,6 +36,7 @@
         "@types/react": "^19.1.10",
         "@types/react-dom": "^19.1.7",
         "@vitejs/plugin-react": "catalog:",
+        "@vitest/ui": "catalog:",
         "eslint": "catalog:",
         "eslint-config-prettier": "catalog:",
         "eslint-plugin-react-hooks": "^5.2.0",
