@@ -5,12 +5,10 @@ A playground for a bunch of tech used for developing react SPA featuring real-ti
 A collaborative multiplayer word guessing game where players work together to guess a secret word chosen by AI.
 Players can see each other typing in real-time and ask yes/no questions to narrow down the possibilities.
 
-## Prerequisites
+## Running locally
 
-- **Node.js** 18+ and npm
-- **Ollama** for AI-powered responses
-
-## How to Run this
+Requires:
+- **Bun** v1.0+
 
 ```bash
   # Install and setup Ollama (macOS)
@@ -24,10 +22,19 @@ Players can see each other typing in real-time and ask yes/no questions to narro
   ollama run llama3.2:3b "Hello!"
 
   # Install all dependencies
-  npm install && npm run install
+  bun install
 
   # Start both frontend and backend servers
-  npm run dev
+  bun run dev
+```
+
+## Running in Docker
+
+Requires:
+- Docker environment (such as Rancher Desktop, Docker Desktop, etc.)
+
+```bash
+docker-compose up
 ```
 
 ## 🛠️ Tech Stack
@@ -54,7 +61,7 @@ Static typing:
 - [Typesafe action definitions](packages/frontend/src/contexts/AppContext/actions.ts)
 - [Typesafe websocket events protocol between frontend and backend](packages/shared/src/types/socketIoEvents.ts)
 
-### Tech stack choices
+### Technical choices
 
 Building running, and testing:
 - **[Bun](https://bun.com/)** as package manager for monorepo, server runtime and test runtime
@@ -100,7 +107,6 @@ Libraries and frameworks:
     - supports fallbacks to long-polling
     - easy to use with Yjs for real-time collaboration
 - **[Yjs](https://docs.yjs.dev/)** for real-time collaborative features
-  - 
 - **[Tailwind](https://tailwindcss.com/)** for styling
   - alternatives: styled-components, emotion, CSS modules
   - why Tailwind:

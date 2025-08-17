@@ -1,5 +1,83 @@
 # Development Guide
 
+## Project Overview
+
+**Guess the Word Together** is a collaborative multiplayer word guessing game built as a modern monorepo showcasing real-time web development patterns.
+
+### Architecture
+
+This is a TypeScript monorepo with three packages:
+- **frontend**: React SPA with Vite and TailwindCSS
+- **backend**: Koa.js server with Socket.io and Ollama AI integration  
+- **shared**: Common types and event definitions
+
+### Quick Start Commands
+
+```bash
+# Development
+npm run dev               # Start all services concurrently
+npm run build            # Build all packages
+npm run test             # Run all tests
+npm run lint             # Lint and fix all packages
+npm run format           # Format all packages
+
+# Individual packages (use --filter)
+bun run --filter=frontend dev
+bun run --filter=backend test
+bun run --filter=shared build
+```
+
+### Project Structure
+
+```
+packages/
+├── frontend/           # React application
+│   ├── src/
+│   │   ├── components/     # UI components
+│   │   ├── contexts/       # React Context (AppContext)
+│   │   ├── hooks/          # Custom hooks
+│   │   └── test/           # Test utilities
+│   ├── vite.config.ts      # Vite configuration
+│   └── tailwind.config.js  # TailwindCSS config
+├── backend/            # Node.js server
+│   ├── src/
+│   │   ├── services/       # Game logic (GameDirector, WordGameAI)
+│   │   ├── index.ts        # Server entry point
+│   │   └── types.ts        # Backend-specific types
+│   └── data/
+│       └── word-list.txt   # Game words database
+└── shared/             # Shared type definitions
+    └── src/types/
+        ├── gameSessionState.ts  # Game state types
+        └── socketIoEvents.ts    # Socket.io event types
+```
+
+### Key Technologies
+
+- **Package Manager**: Bun (fastest, with workspace support)
+- **Frontend**: React 19 + Vite + TailwindCSS
+- **Backend**: Koa.js + Socket.io + Ollama AI
+- **Testing**: Vitest + React Testing Library + happy-dom
+- **Real-time**: Socket.io + Yjs (collaborative editing)
+- **Monorepo**: Bun workspaces with catalog for dependency unification
+
+### Development Patterns
+
+#### State Management
+- **Frontend**: React Context (`AppContext`) with reducer pattern
+- **Backend**: In-memory game sessions managed by `GameDirector`
+- **Shared**: TypeScript interfaces for type safety across packages
+
+#### Type Safety
+- Socket.io events are fully typed using shared interfaces
+- All actions are type-safe using discriminated unions
+- Import restrictions prevent dist/ folder access via ESLint
+
+#### AI Integration  
+- Uses Ollama (llama3.2:3b model) for word categorization and question answering
+- Fallback handling for AI service unavailability
+- File: `packages/backend/src/services/WordGameAI.ts`
+
 ## Testing Patterns
 
 ### React Component Testing
@@ -192,3 +270,45 @@ describe('GameStatusMessage', () => {
 3. **Realistic**: Uses real context providers instead of mocks
 4. **Focused**: Tests behavior, not implementation details
 5. **Debuggable**: Clear state declarations make issues easy to trace
+
+## Code Conventions
+
+### Import Rules
+- Never import from `dist/` folders - use proper package imports
+- Never include file extensions in TypeScript imports
+- Use workspace references for monorepo packages: `import { ... } from 'shared'`
+
+### File Naming
+- Components: PascalCase (`GameStatusMessage.tsx`)
+- Utilities: camelCase (`useScrollToBottom.ts`)
+- Tests: Same name as source + `.test.tsx`
+- Types: Descriptive names in `/types` folders
+
+### ESLint Configuration
+- Shared root config with package-specific overrides
+- Prettier integration for consistent formatting
+- Unused variable prefixes with `_` are ignored
+- TypeScript strict mode enabled
+
+## Prerequisites & Setup
+
+### Required Software
+- **Bun** (package manager and runtime)
+- **Ollama** for AI functionality
+
+### First-time Setup
+```bash
+# Install Ollama (macOS)
+brew install ollama
+ollama serve &
+ollama pull llama3.2:3b
+
+# Install dependencies and start development
+npm install
+npm run dev
+```
+
+### Docker Support
+- Single unified container for frontend + backend
+- Health check endpoint: `/health`
+- Ports: 3001 (app), 1234 (WebSocket)
