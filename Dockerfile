@@ -18,9 +18,6 @@ FROM base AS build
 COPY --from=install /usr/src/app/node_modules node_modules
 COPY . .
 
-# Build shared package first
-RUN cd packages/shared && bun run build
-
 # Build frontend
 RUN cd packages/frontend && bun run build
 
@@ -39,7 +36,6 @@ RUN bun install --frozen-lockfile --production
 # Copy built artifacts
 COPY --from=build /usr/src/app/packages/backend/dist packages/backend/dist
 COPY --from=build /usr/src/app/packages/frontend/dist packages/frontend/dist
-COPY --from=build /usr/src/app/packages/shared/dist packages/shared/dist
 
 # Copy runtime data files
 COPY --from=build /usr/src/app/packages/backend/data packages/backend/data
