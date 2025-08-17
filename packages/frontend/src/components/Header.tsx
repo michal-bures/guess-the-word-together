@@ -3,7 +3,6 @@ import { useAppContext } from '../contexts/AppContext/AppContext'
 export function Header() {
     const { state, giveUp } = useAppContext()
 
-    // Only show Give up button during active gameplay (not when game is over)
     const showGiveUpButton = state.connected && !state.gameState.gameOver
 
     return (
