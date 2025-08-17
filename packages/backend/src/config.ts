@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+require('dotenv').config()
+
 export const config = {
     // Server configuration
     port: parseInt(process.env.PORT || '3001'),
@@ -8,6 +11,11 @@ export const config = {
 
     // Game configuration
     defaultRoomId: 'main-room',
+
+    // AI model
+    aiModel: process.env.AI_MODEL || 'openai',
+
+    openAIApiKey: process.env.OPENAI_API_KEY || '',
 
     // Paths
     frontendDistPath: '../../frontend/dist'

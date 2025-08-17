@@ -27,6 +27,7 @@
         "koa": "^2.15.3",
         "koa-bodyparser": "^4.4.1",
         "koa-static": "^5.0.0",
+        "openai": "^5.12.2",
         "ollama": "^0.5.10",
         "shared": "workspace:*",
         "socket.io": "^4.8.1",

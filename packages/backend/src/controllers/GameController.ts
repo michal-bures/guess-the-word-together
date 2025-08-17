@@ -1,10 +1,14 @@
 import type { Server, Socket } from 'socket.io'
 import type { ClientToServerEvents, ServerToClientEvents, GameSessionState } from 'shared'
-import { wordGameAI } from '../services/WordGameAI'
-import { gameSessionsManager } from '../services/GameSessionsManager'
+import { WordGameAI } from '../services/WordGameAI'
+import { GameSessionsManager } from '../services/GameSessionsManager'
 
 export class GameController {
-    constructor(private io: Server<ClientToServerEvents, ServerToClientEvents>) {}
+    constructor(
+        private io: Server<ClientToServerEvents, ServerToClientEvents>,
+        private gameSessions: GameSessionsManager,
+        private ai: WordGameAI
+    ) {}
 
     async handleConnection(
         socket: Socket<ClientToServerEvents, ServerToClientEvents>,
@@ -63,9 +67,9 @@ export class GameController {
         socket: Socket<ClientToServerEvents, ServerToClientEvents>
     ): Promise<void> {
         try {
-            const word = await wordGameAI.pickRandomWord()
-            const category = await wordGameAI.categorizeWord(word)
-            const gameSession = gameSessionsManager.startNewGame(roomId, word, category)
+            const word = await this.ai.pickRandomWord()
+            const category = await this.ai.categorizeWord(word)
+            const gameSession = this.gameSessions.startNewGame(roomId, word, category)
 
             // Notify all players of new round
             this.io.to(roomId).emit('game-state-sync', {
@@ -90,21 +94,21 @@ export class GameController {
     }): Promise<void> {
         const { roomId, questionId, question, socket } = params
 
-        const session = gameSessionsManager.getGameSession(roomId)
+        const session = this.gameSessions.getGameSession(roomId)
         if (!session) {
             await this.startNewGame(roomId, socket)
             throw new Error('No active game session')
         }
 
-        gameSessionsManager.addQuestionToSession(roomId, {
+        this.gameSessions.addQuestionToSession(roomId, {
             id: questionId,
             question,
             userId: socket.id!
         })
 
-        const aiResponse = await wordGameAI.answerQuestion(question, session.secretWord)
+        const aiResponse = await this.ai.answerQuestion(question, session.secretWord)
 
-        gameSessionsManager.updateQuestion(roomId, questionId, {
+        this.gameSessions.updateQuestion(roomId, questionId, {
             answer: aiResponse.answer,
             isCorrectGuess: aiResponse.isCorrectGuess
         })
@@ -116,29 +120,29 @@ export class GameController {
 
         if (aiResponse.isCorrectGuess) {
             // Game over!
-            gameSessionsManager.setGameOver(roomId, socket.id!)
+            this.gameSessions.setGameOver(roomId, socket.id!)
             this.io
                 .to(roomId)
-                .emit('game-over', gameSessionsManager.getGameSession(roomId)!.gameOver!)
+                .emit('game-over', this.gameSessions.getGameSession(roomId)!.gameOver!)
         }
     }
 
     _handleGiveUp(roomId: string, userId: string): void {
-        const session = gameSessionsManager.getGameSession(roomId)
+        const session = this.gameSessions.getGameSession(roomId)
         if (!session) {
             throw new Error('No active game session')
         }
 
         // Set game over with null winnerId to indicate give up
-        gameSessionsManager.setGameOver(roomId, null)
-        this.io.to(roomId).emit('game-over', gameSessionsManager.getGameSession(roomId)!.gameOver!)
+        this.gameSessions.setGameOver(roomId, null)
+        this.io.to(roomId).emit('game-over', this.gameSessions.getGameSession(roomId)!.gameOver!)
         console.log(
             `User ${userId} gave up in room ${roomId}. Secret word was: ${session.secretWord}`
         )
     }
 
     getCurrentGameState(roomId: string): GameSessionState | null {
-        const currentSession = gameSessionsManager.getGameSession(roomId)
+        const currentSession = this.gameSessions.getGameSession(roomId)
         if (!currentSession) {
             return null
         }

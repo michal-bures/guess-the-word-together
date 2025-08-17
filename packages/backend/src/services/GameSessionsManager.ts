@@ -60,5 +60,3 @@ export class GameSessionsManager {
         return this.sessions.has(roomId)
     }
 }
-
-export const gameSessionsManager = new GameSessionsManager()

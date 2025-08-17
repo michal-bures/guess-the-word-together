@@ -9,17 +9,32 @@ Players can see each other typing in real-time and ask yes/no questions to narro
 
 Requires:
 - **Bun** v1.0+
+- **AI Provider**: Choose either OpenAI API (cloud) or Ollama (local)
 
+### Option 1: Using OpenAI API (Recommended)
+```bash
+  # Get your OpenAI API key from https://platform.openai.com/api-keys
+  # Set environment variables (or place in a `.env` file)
+  export AI_MODEL=openai
+  export OPENAI_API_KEY=your-api-key-here
+
+  # Install all dependencies
+  bun install
+
+  # Start both frontend and backend servers
+  bun run dev
+```
+
+### Option 2: Using Local Ollama
 ```bash
   # Install and setup Ollama (macOS)
   brew install ollama
-
-  # Start Ollama service (keep running in background)
   ollama serve &
-
-  # Pull required model and test
   ollama pull llama3.2:3b
-  ollama run llama3.2:3b "Hello!"
+
+  # Set environment variables
+  export AI_MODEL=ollama
+  export OLLAMA_BASE_URL=http://localhost:11434
 
   # Install all dependencies
   bun install
@@ -32,15 +47,36 @@ Requires:
 
 Requires:
 - Docker environment (such as Rancher Desktop, Docker Desktop, etc.)
+- **AI Provider**: Choose either OpenAI API or Ollama
 
+### Using OpenAI API (Recommended)
 ```bash
+# Set environment variables
+export AI_MODEL=openai
+export OPENAI_API_KEY=your-api-key-here
+
+# Start the application
+docker-compose up
+```
+
+### Using Local Ollama
+```bash
+# Set environment variables
+export AI_MODEL=ollama
+export OLLAMA_BASE_URL=http://host.docker.internal:11434
+
+# Make sure Ollama is running on your host
+ollama serve &
+ollama pull llama3.2:3b
+
+# Start the application
 docker-compose up
 ```
 
 ## 🛠️ Tech Stack
 
 ### TODO
-- Switch to API-based AI, add secrets management
+- ✅ Switch to configurable AI providers (OpenAI API + local Ollama)
 - Yjs collaboration with WebSocket
 - MCP API
 - Code splitting & lazy loading

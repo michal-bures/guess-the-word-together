@@ -1,8 +1,8 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { WordGameAI } from './WordGameAI'
 
-describe('WordGameAI', () => {
-    const ai = new WordGameAI()
+describe('WordGameAI', async () => {
+    const ai = new WordGameAI(dummyAIModel())
 
     describe('checkDirectGuess', () => {
         it('should detect exact word matches', () => {
@@ -22,3 +22,11 @@ describe('WordGameAI', () => {
         })
     })
 })
+
+function dummyAIModel() {
+    return {
+        ask: async () => {
+            return ''
+        }
+    }
+}

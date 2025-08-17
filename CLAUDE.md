@@ -8,7 +8,7 @@
 
 This is a TypeScript monorepo with three packages:
 - **frontend**: React SPA with Vite and TailwindCSS
-- **backend**: Koa.js server with Socket.io and Ollama AI integration  
+- **backend**: Koa.js server with Socket.io and configurable AI providers (OpenAI/Ollama)  
 - **shared**: Common types and event definitions
 
 ### Quick Start Commands
@@ -56,7 +56,7 @@ packages/
 
 - **Package Manager**: Bun (fastest, with workspace support)
 - **Frontend**: React 19 + Vite + TailwindCSS
-- **Backend**: Koa.js + Socket.io + Ollama AI
+- **Backend**: Koa.js + Socket.io + AI providers (OpenAI/Ollama)
 - **Testing**: Vitest + React Testing Library + happy-dom
 - **Real-time**: Socket.io + Yjs (collaborative editing)
 - **Monorepo**: Bun workspaces with catalog for dependency unification
@@ -74,9 +74,10 @@ packages/
 - Import restrictions prevent dist/ folder access via ESLint
 
 #### AI Integration  
-- Uses Ollama (llama3.2:3b model) for word categorization and question answering
+- Configurable AI providers: OpenAI (gpt-4o-mini) or Ollama (llama3.2:3b)
 - Fallback handling for AI service unavailability
-- File: `packages/backend/src/services/WordGameAI.ts`
+- Factory pattern for easy provider switching
+- Files: `packages/backend/src/services/WordGameAI.ts`, `packages/backend/src/services/AIModel/`
 
 ## Testing Patterns
 
@@ -294,14 +295,32 @@ describe('GameStatusMessage', () => {
 
 ### Required Software
 - **Bun** (package manager and runtime)
-- **Ollama** for AI functionality
+- **AI Provider**: Choose either OpenAI API (cloud) or Ollama (local)
 
 ### First-time Setup
+
+#### Option 1: Using OpenAI API (Recommended)
 ```bash
-# Install Ollama (macOS)
+# Get your OpenAI API key from https://platform.openai.com/api-keys
+# Set environment variables:
+export AI_MODEL=openai
+export OPENAI_API_KEY=your-api-key-here
+
+# Install dependencies and start development
+npm install
+npm run dev
+```
+
+#### Option 2: Using Local Ollama
+```bash
+# Install and setup Ollama
 brew install ollama
 ollama serve &
 ollama pull llama3.2:3b
+
+# Set environment variables:
+export AI_MODEL=ollama
+export OLLAMA_BASE_URL=http://localhost:11434
 
 # Install dependencies and start development
 npm install

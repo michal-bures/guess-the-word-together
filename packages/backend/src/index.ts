@@ -2,19 +2,28 @@ import { createServer } from 'http'
 import { createKoaApp, createSocketServer } from './server'
 import { createYjsWebSocketServer } from './websocket/yjsServer'
 import { config } from './config'
-import type { Socket } from 'socket.io'
+import type { Server, Socket } from 'socket.io'
 import type { ClientToServerEvents, ServerToClientEvents } from 'shared'
 import { GameController } from './controllers/GameController'
+import { WordGameAI } from './services/WordGameAI'
+import { createAIModel } from './services/AIModel/factory'
+import { GameSessionsManager } from './services/GameSessionsManager'
+import { redact } from './utils'
 
 async function startServer(): Promise<void> {
     try {
+        console.log('Starting with config:', {
+            ...config,
+            openAIApiKey: redact(config.openAIApiKey)
+        })
+
         // Create Koa app and HTTP server
         const app = createKoaApp()
         const httpServer = createServer(app.callback())
 
-        // Create and setup Socket.io server
+        // Create and setup the GameController with Socket.IO
         const io = createSocketServer(httpServer)
-        const gameController = new GameController(io)
+        const gameController = await createGameController(io)
         io.on('connection', async (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
             const roomId = config.defaultRoomId
             // Delegate connection handling to controller
@@ -49,6 +58,14 @@ async function startServer(): Promise<void> {
         console.error('Failed to start server:', error)
         process.exit(1)
     }
+}
+
+async function createGameController(io: Server<ClientToServerEvents, ServerToClientEvents>) {
+    const aiModel = await createAIModel(config.aiModel)
+    const ai = new WordGameAI(aiModel)
+    const gameSessions = new GameSessionsManager()
+    const gameController = new GameController(io, gameSessions, ai)
+    return gameController
 }
 
 // Start the server

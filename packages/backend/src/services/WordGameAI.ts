@@ -1,13 +1,11 @@
-import { Ollama } from 'ollama'
 import * as fs from 'fs'
 import * as path from 'path'
 import { Answer } from 'shared'
-
-const ollama = new Ollama({ host: 'http://localhost:11434' })
-
-const LLM_MODEL = 'llama3.2:3b'
+import { AIModel } from './AIModel/types'
 
 export class WordGameAI {
+    constructor(private aiModel: AIModel) {}
+
     private wordList: string[] | null = null
 
     private loadWordList(): string[] {
@@ -35,13 +33,13 @@ export class WordGameAI {
     Return only the category name.`
 
         try {
-            const response = await ollama.generate({
-                model: LLM_MODEL,
-                prompt: prompt,
-                stream: false
+            const response = await this.aiModel.ask({
+                prompt,
+                maxResponseTokens: 10,
+                temperature: 0.1
             })
 
-            return response.response.trim().toLowerCase()
+            return response.trim().toLowerCase() || 'unknown'
         } catch (_error) {
             return 'unknown'
         }
@@ -124,17 +122,13 @@ Secret word is: "${targetWord}"
 Your Answer:`
 
         console.log('Q: ', question, `(secret word: ${targetWord})`)
-        const response = await ollama.generate({
-            model: LLM_MODEL,
-            prompt: prompt,
-            stream: false,
-            options: {
-                temperature: 0.1,
-                top_p: 0.9
-            }
+        const rawAnswer = await this.aiModel.ask({
+            prompt,
+            maxResponseTokens: 5,
+            temperature: 0.1,
+            topP: 0.9
         })
 
-        const rawAnswer = response.response.trim()
         const processedAnswer = this.postProcessAnswer(rawAnswer)
         console.log('A: ', processedAnswer, `(raw: ${rawAnswer})`)
 
@@ -173,5 +167,3 @@ Your Answer:`
         return 'Unclear'
     }
 }
-
-export const wordGameAI = new WordGameAI()
