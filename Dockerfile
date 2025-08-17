@@ -18,17 +18,16 @@ FROM base AS build
 COPY --from=install /usr/src/app/node_modules node_modules
 COPY . .
 
-# Build frontend
+# Build frontend (uses shared source files directly)
 RUN cd packages/frontend && bun run build
 
-# Build backend
+# Build backend (uses shared source files directly via path mapping)
 RUN cd packages/backend && bun run build
 
 # Production stage - install only production dependencies
 FROM base AS release
 COPY package.json bun.lockb* ./
 COPY packages/backend/package.json ./packages/backend/
-COPY packages/shared/package.json ./packages/shared/
 
 # Install only production dependencies
 RUN bun install --frozen-lockfile --production
