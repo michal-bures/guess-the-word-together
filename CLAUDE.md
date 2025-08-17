@@ -58,7 +58,7 @@ packages/
 - **Frontend**: React 19 + Vite + TailwindCSS
 - **Backend**: Koa.js + Socket.io + AI providers (OpenAI/Ollama)
 - **Testing**: Vitest + React Testing Library + happy-dom
-- **Real-time**: Socket.io + Yjs (collaborative editing)
+- **Real-time**: Socket.io for multiplayer communication
 - **Monorepo**: Bun workspaces with catalog for dependency unification
 
 ### Development Patterns
@@ -330,4 +330,4 @@ npm run dev
 ### Docker Support
 - Single unified container for frontend + backend
 - Health check endpoint: `/health`
-- Ports: 3001 (app), 1234 (WebSocket)
+- Port: 3001 (unified app)

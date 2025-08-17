@@ -1,8 +1,7 @@
 import { createServer } from 'http'
 import { createKoaApp, createSocketServer } from './server'
-import { createYjsWebSocketServer } from './websocket/yjsServer'
 import { config } from './config'
-import type { Server, Socket } from 'socket.io'
+import type { Server } from 'socket.io'
 import type { ClientToServerEvents, ServerToClientEvents } from 'shared'
 import { GameController } from './GameController'
 import { WordGameAI } from './services/WordGameAI'
@@ -31,9 +30,6 @@ async function startServer(): Promise<void> {
             // Delegate connection handling to controller
             await gameController.handleConnection(socket, roomId)
         })
-
-        // Create Yjs WebSocket server
-        createYjsWebSocketServer()
 
         // Start HTTP server
         httpServer.listen(config.port, () => {

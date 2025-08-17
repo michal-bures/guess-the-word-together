@@ -47,10 +47,9 @@ Requires:
 ## 🛠️ Tech Stack
 
 ### TODO
-- Yjs collaboration with WebSocket
-- Code splitting & lazy loading
-- Tracking test runtime duration, coverage
-- Tracking bundle size
+- Evaluate Yjs or other libraries for real-time collaboration?
+- Test out code splitting & lazy loading
+- Investigate ways to track test runtime duration, coverage, bundle size and similar metrics over time
 - Tagging & versioning releases
 
 ### Points of interest
@@ -60,17 +59,20 @@ Dependency management:
   - this also makes bun use a single central `node_modules` folder for all packages
 
 CI pipeline:
-- App is built as a single Docker image running bun, which serves both frontend and backend
-- For maximum speed, checks and build runs in parallel, deploy is triggered if everything passes
-- TODO: for better scaling & availability, static assets could be uploaded to CDN and served from there instead of the backend container
+![pipeline.png](docs/img/pipeline.png)
 
-Static typing:
-- [Typesafe action definitions](packages/frontend/src/contexts/AppContext/actions.ts)
-- [Typesafe websocket events protocol between frontend and backend](packages/shared/src/types/socketIoEvents.ts)
+- App is built as a single Docker image running a Koa server on Bun, which serves both frontend and backend
+- Fast package installation, build and tests thanks to the Bun + Vite + Vitest combo
+- For maximum speed, checks and build runs in parallel, deploy is triggered if everything passes
+- Note: For better scaling & availability, static assets could be uploaded to CDN and served from there instead 
+  of being part of the docker container
+
+Type safety:
+- The `shared` package is use to define a [typesafe websocket protocol](packages/shared/src/types/socketIoEvents.ts) between frontend and backend
 
 ### Technical choices
 
-Building running, and testing:
+Building, running, and testing:
 - **[Bun](https://bun.com/)** as package manager for monorepo, server runtime and test runtime
   - package manager alternatives: pnpm, nx, turborepo
   - server runtime alternatives: node.js, deno
