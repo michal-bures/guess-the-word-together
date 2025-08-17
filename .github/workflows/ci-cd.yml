@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main, master ]
 
@@ -55,9 +55,6 @@ jobs:
       - name: Format check backend
         run: bun run --filter=backend format:check
 
-      - name: Build shared package
-        run: bun run --filter=shared build
-
       - name: Type check backend
         run: bun run --filter=backend build
 
@@ -85,9 +82,6 @@ jobs:
 
       - name: Format check frontend
         run: bun run --filter=frontend format:check
-
-      - name: Build shared package
-        run: bun run --filter=shared build
 
       - name: Type check frontend
         run: bun run --filter=frontend build
@@ -132,7 +126,7 @@ jobs:
         run: |
           if [[ "${{ needs.test-backend.result }}" == "failure" || "${{ needs.test-frontend.result }}" == "failure" || "${{ needs.test-shared.result }}" == "failure" ]]; then
             echo "result=failure" >> $GITHUB_OUTPUT
-            echo "❌ One or more tests failed"
+            echo "❌ One or more checks failed"
             exit 1
           else
             echo "result=success" >> $GITHUB_OUTPUT
@@ -144,8 +138,7 @@ jobs:
     needs: [ detect-changes ]
     if: >-
       ${{
-        (needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true') &&
-        (github.ref == 'refs/heads/main')
+        (needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true')
       }}
 
     permissions:
