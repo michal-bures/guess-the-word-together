@@ -1,54 +1,19 @@
 # Guess the Word Together
 
-A tech demo for modern SPA setup in the form of a collaborative word guessing game. Players work together to guess 
+A tech demo of modern React SPA setup in the form of a collaborative word guessing game. Players work together to guess 
 a secret word chosen by AI. Players can see each other typing in real-time and ask yes/no questions to narrow down the possibilities.
 
-Play it at https://guess-the-word-together.onrender.com/.
-
-## Running locally
-
-Requires:
-- **Bun** v1.0+
-- **Generative AI Provider**: You can either connect to OpenAI API (model `gpt-4o-mini`), or to a locally running AI model using [Ollama](https://ollama.com/) (model `llama3.2:3b`).
-
-### Option 1: Using OpenAI API
-```bash
-  # Get your OpenAI API key from https://platform.openai.com/api-keys
-  # Set environment variables (or place in a `.env` file in packages/backend)
-  export AI_MODEL=openai
-  export OPENAI_API_KEY=your-api-key-here
-
-  # Install all dependencies
-  bun install
-
-  # Start both frontend and backend servers
-  bun run dev
-```
-
-### Option 2: Using Local AI model
-```bash
-  # Install and setup Ollama (macOS)
-  brew install ollama
-  ollama serve &
-  ollama pull llama3.2:3b
-
-  # Set environment variables (or place in a `.env` file in packages/backend)
-  export AI_MODEL=ollama
-
-  # Install all dependencies
-  bun install
-
-  # Start both frontend and backend servers
-  bun run dev
-```
+**[Play the live demo here](https://guess-the-word-together.onrender.com/)**.
 
 ## 🛠️ Tech Stack
 
-### TODO
-- Evaluate Yjs or other libraries for real-time collaboration?
-- Test out code splitting & lazy loading
-- Investigate ways to track test runtime duration, coverage, bundle size and similar metrics over time
-- Tagging & versioning releases
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)
+![Bun](https://img.shields.io/badge/Bun-%23000000.svg?style=for-the-badge&logo=bun&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
 ### Points of interest
 Dependency management:
@@ -72,7 +37,7 @@ The Internal `shared` package:
   from typescript is delegated to the consuming packages (frontend and backend).
 - Currently it's main use is to define a [typesafe websocket protocol](packages/shared/src/types/socketIoEvents.ts) between frontend and backend.
 
-### Technical choices
+### More on the technical choices
 
 Building, running, and testing:
 - **[Bun](https://bun.com/)** as package manager for monorepo, server runtime and test runtime
@@ -129,3 +94,47 @@ Libraries and frameworks:
   - why React Context:
     - simple and lightweight for smaller applications
     - no additional dependencies
+
+## How to Run
+
+Requires:
+- **Bun** v1.0+
+- **Generative AI Provider**: You can either connect to OpenAI API (model `gpt-4o-mini`), or to a locally running AI model using [Ollama](https://ollama.com/) (model `llama3.2:3b`).
+
+### Option 1: Using OpenAI API
+```bash
+  # Get your OpenAI API key from https://platform.openai.com/api-keys
+  # Set environment variables (or place in a `.env` file in packages/backend)
+  export AI_MODEL=openai
+  export OPENAI_API_KEY=your-api-key-here
+
+  # Install all dependencies
+  bun install
+
+  # Start both frontend and backend servers
+  bun run dev
+```
+
+### Option 2: Using Local AI model
+```bash
+  # Install and setup Ollama (macOS)
+  brew install ollama
+  ollama serve &
+  ollama pull llama3.2:3b
+
+  # Set environment variables (or place in a `.env` file in packages/backend)
+  export AI_MODEL=ollama
+
+  # Install all dependencies
+  bun install
+
+  # Start both frontend and backend servers
+  bun run dev
+```
+
+
+## TODOs
+- Evaluate Yjs or other libraries for real-time collaboration?
+- Test out code splitting & lazy loading
+- Investigate ways to track test runtime duration, coverage, bundle size and similar metrics over time
+- Tagging & versioning releases
