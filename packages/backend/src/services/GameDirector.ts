@@ -6,12 +6,7 @@ export class GameDirector {
 
     startNewGame(roomId: string, secretWord: string, category: string): BackendGameSessionState {
         console.log(
-            'Starting new game in room:',
-            roomId,
-            'with secret word:',
-            secretWord,
-            'and category:',
-            category
+            `Starting new game in room ${roomId} with secret word ${secretWord} (category: ${category})`
         )
         const newSession: BackendGameSessionState = {
             secretWord: secretWord,
