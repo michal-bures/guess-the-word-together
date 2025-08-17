@@ -189,7 +189,7 @@ jobs:
     if: >-
       ${{
         needs.build-unified.result == 'success' &&
-        needs.check-tests.outputs.result == 'success'
+        needs.check-tests.result == 'success'
       }}
     
     permissions:
