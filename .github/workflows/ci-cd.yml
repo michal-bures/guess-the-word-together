@@ -114,17 +114,76 @@ jobs:
       - name: Type check shared
         run: bun run --filter=shared build
 
-  # Build and push unified Docker image (contains both frontend and backend)
+  # Check if all tests passed or were skipped (no failures)
+  check-tests:
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend, test-shared]
+    if: always()
+    outputs:
+      result: ${{ steps.check.outputs.result }}
+    steps:
+      - id: check
+        run: |
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]]; then
+            echo "result=failure" >> $GITHUB_OUTPUT
+            echo "❌ One or more tests failed"
+          else
+            echo "result=success" >> $GITHUB_OUTPUT
+            echo "✅ All tests passed or were skipped"
+          fi
+
+  # Build unified Docker image (contains both frontend and backend)
   build-unified:
     runs-on: ubuntu-latest
-    needs: [detect-changes, test-backend, test-frontend, test-shared]
+    needs: [detect-changes]
     if: >-
       ${{
         (needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true') &&
-        (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') &&
-        (needs.test-backend.result == 'success' || needs.test-backend.result == 'skipped') &&
-        (needs.test-frontend.result == 'success' || needs.test-frontend.result == 'skipped') &&
-        (needs.test-shared.result == 'success' || needs.test-shared.result == 'skipped')
+        (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      }}
+    
+    permissions:
+      contents: read
+      packages: write
+      
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+            
+      - name: Build unified image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=docker
+
+  # Push unified Docker image only if build succeeded and all tests passed
+  push-unified:
+    runs-on: ubuntu-latest
+    needs: [build-unified, check-tests]
+    if: >-
+      ${{
+        needs.build-unified.result == 'success' &&
+        needs.check-tests.outputs.result == 'success'
       }}
     
     permissions:
@@ -163,8 +222,8 @@ jobs:
   # Deploy to staging/production
   deploy:
     runs-on: ubuntu-latest
-    needs: [build-unified]
-    if: ${{ needs.build-unified.result == 'success' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') }}
+    needs: [push-unified]
+    if: ${{ needs.push-unified.result == 'success' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') }}
     environment: production
     
     steps:
@@ -173,5 +232,5 @@ jobs:
       - name: Deploy to production
         run: |
           echo "Deployment step - configure based on your hosting platform"
-          echo "Unified image build: ${{ needs.build-unified.result }}"
+          echo "Unified image push: ${{ needs.push-unified.result }}"
           # Add deployment commands here (Railway, Render, etc.)
