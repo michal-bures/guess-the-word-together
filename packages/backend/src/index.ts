@@ -40,11 +40,15 @@ app.use(async (ctx, next) => {
 // SPA fallback - serve index.html for non-API routes that don't match static files
 app.use(async (ctx, next) => {
     // Skip API routes and Socket.IO
-    if (ctx.path.startsWith('/api') || ctx.path.startsWith('/socket.io') || ctx.path === '/health') {
+    if (
+        ctx.path.startsWith('/api') ||
+        ctx.path.startsWith('/socket.io') ||
+        ctx.path === '/health'
+    ) {
         await next()
         return
     }
-    
+
     // For non-API routes that don't have file extensions, serve index.html (SPA routing)
     if (!ctx.path.includes('.') && ctx.method === 'GET') {
         try {
@@ -158,7 +162,9 @@ io.on('connection', async socket => {
         // Set game over with null winnerId to indicate give up
         gameDirector.setGameOver(roomId, null)
         io.to(roomId).emit('game-over', gameDirector.getGameSession(roomId)!.gameOver!)
-        console.log(`User ${socket.id} gave up in room ${roomId}. Secret word was: ${session.secretWord}`)
+        console.log(
+            `User ${socket.id} gave up in room ${roomId}. Secret word was: ${session.secretWord}`
+        )
     })
 
     socket.on('disconnect', () => {

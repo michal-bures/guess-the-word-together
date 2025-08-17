@@ -120,7 +120,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <AppContext.Provider value={{ state, sendQuestion, startNewRound, giveUp, updateQuestionInput }}>
+        <AppContext.Provider
+            value={{ state, sendQuestion, startNewRound, giveUp, updateQuestionInput }}
+        >
             {children}
         </AppContext.Provider>
     )
