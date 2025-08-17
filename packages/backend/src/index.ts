@@ -9,6 +9,7 @@ import { WordGameAI } from './services/WordGameAI'
 import { createAIModel } from './services/AIModel/factory'
 import { GameSessionsManager } from './services/GameSessionsManager'
 import { redact } from './utils'
+import { GameSocket } from './types'
 
 async function startServer(): Promise<void> {
     try {
@@ -24,7 +25,7 @@ async function startServer(): Promise<void> {
         // Create and setup the GameController with Socket.IO
         const io = createSocketServer(httpServer)
         const gameController = await createGameController(io)
-        io.on('connection', async (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
+        io.on('connection', async (socket: GameSocket) => {
             console.log('new connection:', socket.id, socket.client.conn.remoteAddress)
             const roomId = config.defaultRoomId
             // Delegate connection handling to controller

@@ -6,12 +6,12 @@ export function mockAppState(overrides: Partial<AppState> = {}): AppState {
         socket: mockSocket(),
         connected: true,
         currentUserId: 'user1',
-        connectedUsers: [],
         questionInput: '',
         gameState: {
             wordCategory: 'animals',
             gameOver: undefined,
-            questions: []
+            questions: [],
+            players: {}
         },
         ...overrides
     }

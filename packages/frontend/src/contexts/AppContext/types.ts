@@ -14,7 +14,6 @@ export interface AppState {
     socket: TypedSocket | null
     connected: boolean
     currentUserId: string
-    connectedUsers: ConnectedUser[]
 
     questionInput: string
     gameState: GameSessionState

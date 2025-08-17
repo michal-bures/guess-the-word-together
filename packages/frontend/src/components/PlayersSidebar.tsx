@@ -1,4 +1,5 @@
 import { useAppContext } from '../contexts/AppContext/AppContext'
+import type { UserInfo } from 'shared'
 
 export function PlayersSidebar() {
     const { state } = useAppContext()
@@ -16,26 +17,29 @@ export function PlayersSidebar() {
             </div>
 
             <div className="flex-1 p-4 space-y-4">
-                {state.connectedUsers.length === 0 ? (
+                {Object.values(state.gameState.players).length === 0 ? (
                     <div className="text-center text-gray-500 mt-8">
                         <p className="text-sm">No other players yet</p>
                         <p className="text-xs text-gray-400">Share the room to invite friends!</p>
                     </div>
                 ) : (
-                    state.connectedUsers.map(user => (
+                    Object.values(state.gameState.players).map(user => (
                         <div key={user.id} className="flex items-start space-x-3">
                             {/* Avatar */}
-                            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                            <div
+                                className="w-8 h-8 bg-gradient-to-br rounded-full flex items-center justify-center text-white text-sm font-medium"
+                                style={{ backgroundColor: user.color }}
+                            >
                                 {user.name.charAt(0).toUpperCase()}
                             </div>
 
                             {/* Typing Indicator */}
                             <div className="flex-1">
                                 <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                                {user.typing ? (
+                                {isTyping(user) ? (
                                     <div className="mt-1 bg-gray-100 rounded-lg p-2 border-l-2 border-blue-400">
                                         <p className="text-xs text-gray-600">typing...</p>
-                                        <p className="text-sm text-gray-800">{user.typing}</p>
+                                        <p className="text-sm text-gray-800">{isTyping(user)}</p>
                                     </div>
                                 ) : (
                                     <p className="text-xs text-gray-400">Ready to play</p>
@@ -64,4 +68,8 @@ export function PlayersSidebar() {
             </div>
         </div>
     )
+}
+
+function isTyping(user: UserInfo) {
+    return (user.lastTyped ?? 0) > Date.now() - 5000
 }

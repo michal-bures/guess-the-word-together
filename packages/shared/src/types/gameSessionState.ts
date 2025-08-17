@@ -1,7 +1,16 @@
 export interface GameSessionState {
     wordCategory: string
     questions: QuestionAnswerPair[]
+    players: Record<string, UserInfo>
     gameOver?: GameOverInfo //when present, indicates the game has ended
+}
+
+export interface UserInfo {
+    id: string
+    name: string
+    color: string
+    currentInput: string
+    lastTyped: number
 }
 
 export interface GameOverInfo {

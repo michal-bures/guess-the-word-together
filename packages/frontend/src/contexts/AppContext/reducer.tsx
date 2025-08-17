@@ -52,8 +52,6 @@ export function reducer(state: AppState, action: Action): AppState {
             }
         case Actions.setQuestionInput.type:
             return { ...state, questionInput: action.payload }
-        case Actions.setConnectedUsers.type:
-            return { ...state, connectedUsers: action.payload }
         default:
             return state
     }

@@ -14,9 +14,9 @@ const initialState: AppState = {
     questionInput: '',
     gameState: {
         wordCategory: '',
-        questions: []
-    },
-    connectedUsers: []
+        questions: [],
+        players: {}
+    }
 }
 
 export function AppContextProvider({ children }: { children: ReactNode }) {
@@ -58,9 +58,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         newSocket.on('disconnect', reason => {
             dispatch(Actions.setConnectionState({ connected: false, userId: '' }))
             console.log('Disconnected from server:', reason)
-            if (reason === 'transport error' || reason === 'ping timeout') {
-                showError('Connection lost. Trying to reconnect...')
-            }
         })
 
         // Handle question answers

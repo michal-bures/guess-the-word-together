@@ -38,7 +38,8 @@ describe('GameStatusMessage', () => {
                     secretWord: 'elephant',
                     winnerId: 'player1'
                 },
-                questions: []
+                questions: [],
+                players: {}
             }
         })
 
@@ -54,7 +55,8 @@ describe('GameStatusMessage', () => {
             gameState: {
                 wordCategory: 'vehicles',
                 gameOver: undefined,
-                questions: []
+                questions: [],
+                players: {}
             }
         })
 
@@ -74,7 +76,8 @@ describe('GameStatusMessage', () => {
                     secretWord: 'cat',
                     winnerId: 'player1'
                 },
-                questions: []
+                questions: [],
+                players: {}
             }
         })
 

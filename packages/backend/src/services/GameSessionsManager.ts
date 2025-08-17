@@ -1,5 +1,6 @@
-import { QuestionAnswerPair } from 'shared'
+import { QuestionAnswerPair, UserInfo } from 'shared'
 import { BackendGameSessionState } from '../types'
+import { generateNickname, getNextColor } from '../utils/playerColors'
 
 export class GameSessionsManager {
     private sessions: Map<string, BackendGameSessionState> = new Map()
@@ -11,10 +12,35 @@ export class GameSessionsManager {
         const newSession: BackendGameSessionState = {
             secretWord: secretWord,
             wordCategory: category,
-            questions: []
+            questions: [],
+            players: {}
         }
         this.sessions.set(roomId, newSession)
         return newSession
+    }
+
+    addUserToSession(roomId: string, userId: string) {
+        const session = this.sessions.get(roomId)
+        if (session) {
+            if (!session.players[userId]) {
+                const takenColors = Object.values(session.players).map(player => player.color)
+                const color = getNextColor(takenColors)
+                const nickname = generateNickname(color)
+                const newUser: UserInfo = {
+                    id: userId,
+                    name: nickname,
+                    color: color,
+                    currentInput: '',
+                    lastTyped: Date.now()
+                }
+                session.players[userId] = newUser
+                return newUser
+            } else {
+                console.warn(`User ${userId} already exists in session ${roomId}`)
+            }
+        } else {
+            console.error(`No active session found for room ${roomId}`)
+        }
     }
 
     getGameSession(roomId: string): BackendGameSessionState | undefined {
@@ -58,5 +84,14 @@ export class GameSessionsManager {
 
     hasActiveSession(roomId: string): boolean {
         return this.sessions.has(roomId)
+    }
+
+    removeUserFromSession(roomId: string, userId: string) {
+        const session = this.sessions.get(roomId)
+        if (session) {
+            delete session.players[userId]
+        } else {
+            console.warn(`No active session found for room ${roomId} to remove user ${userId}`)
+        }
     }
 }
