@@ -13,10 +13,10 @@ Requires:
 - **Bun** v1.0+
 - **AI Provider**: Choose either OpenAI API (cloud) or Ollama (local)
 
-### Option 1: Using OpenAI API (Recommended)
+### Option 1: Using OpenAI API
 ```bash
   # Get your OpenAI API key from https://platform.openai.com/api-keys
-  # Set environment variables (or place in a `.env` file)
+  # Set environment variables (or place in a `.env` file in packages/backend)
   export AI_MODEL=openai
   export OPENAI_API_KEY=your-api-key-here
 
@@ -27,16 +27,15 @@ Requires:
   bun run dev
 ```
 
-### Option 2: Using Local Ollama
+### Option 2: Using Local AI model
 ```bash
   # Install and setup Ollama (macOS)
   brew install ollama
   ollama serve &
   ollama pull llama3.2:3b
 
-  # Set environment variables
+  # Set environment variables (or place in a `.env` file in packages/backend)
   export AI_MODEL=ollama
-  export OLLAMA_BASE_URL=http://localhost:11434
 
   # Install all dependencies
   bun install
@@ -45,42 +44,10 @@ Requires:
   bun run dev
 ```
 
-## Running in Docker
-
-Requires:
-- Docker environment (such as Rancher Desktop, Docker Desktop, etc.)
-- **AI Provider**: Choose either OpenAI API or Ollama
-
-### Using OpenAI API (Recommended)
-```bash
-# Set environment variables
-export AI_MODEL=openai
-export OPENAI_API_KEY=your-api-key-here
-
-# Start the application
-docker-compose up
-```
-
-### Using Local Ollama
-```bash
-# Set environment variables
-export AI_MODEL=ollama
-export OLLAMA_BASE_URL=http://host.docker.internal:11434
-
-# Make sure Ollama is running on your host
-ollama serve &
-ollama pull llama3.2:3b
-
-# Start the application
-docker-compose up
-```
-
 ## 🛠️ Tech Stack
 
 ### TODO
-- ✅ Switch to configurable AI providers (OpenAI API + local Ollama)
 - Yjs collaboration with WebSocket
-- MCP API
 - Code splitting & lazy loading
 - Tracking test runtime duration, coverage
 - Tracking bundle size

@@ -1,13 +1,11 @@
-import { type ReactNode, useEffect, useReducer, useRef } from 'react'
+import { type ReactNode, useReducer } from 'react'
 import { Actions } from './actions'
-import type { AppState, TypedSocket } from './types'
+import type { AppState } from './types'
 import { reducer } from './reducer'
-import { io } from 'socket.io-client'
 import { AppContext } from './AppContext'
-import { useToast } from '../../hooks/useToast'
 import { useDebounce } from '../../hooks/useDebounce'
-import ErrorToast from '../../components/ErrorToast'
-import type { QuestionAnswerPair } from 'shared'
+import { useExposeStateForDebugging } from './useExposeStateForDebugging'
+import { useSocketConnection } from './useSocketConnection'
 
 const initialState: AppState = {
     socket: null,
@@ -23,85 +21,14 @@ const initialState: AppState = {
 
 export function AppContextProvider({ children }: { children: ReactNode }) {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { toasts, showError, removeToast } = useToast()
 
     // Debounced typing emit - fires at most once per second
     const debouncedTypingEmit = useDebounce((input: string) => {
         state.socket?.emit('typing', input.trim())
     }, 250)
 
-    // Create a ref to store the current state for debugging
-    const stateRef = useRef(state)
-    stateRef.current = state
-
-    // Expose game state to global scope for debugging (only setup once)
-    useEffect(() => {
-        window.getAppState = () => {
-            console.log('AppState:', stateRef.current)
-        }
-
-        // Also provide direct access to current state
-        Object.defineProperty(window, 'GameSessionState', {
-            get: () => stateRef.current,
-            configurable: true
-        })
-    }, []) // Empty dependency array - only runs once
-
-    useEffect(() => {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || window.location.origin
-        const newSocket: TypedSocket = io(backendUrl)
-        dispatch(Actions.setSocket(newSocket))
-
-        newSocket.on('connect', () => {
-            dispatch(
-                Actions.setConnectionState({
-                    connected: true,
-                    userId: newSocket.id!
-                })
-            )
-            console.log('Connected to server')
-        })
-
-        newSocket.on('disconnect', reason => {
-            dispatch(Actions.setConnectionState({ connected: false, userId: '' }))
-            console.log('Disconnected from server:', reason)
-        })
-
-        // Handle new questions
-        newSocket.on('question-updated', (data: QuestionAnswerPair) => {
-            dispatch(Actions.addQuestion(data))
-            if (!data.answer) {
-                //user just asked a question => clear their input
-                dispatch(Actions.setUserTyping({ userId: data.userId, input: '' }))
-            }
-        })
-
-        // Handle user typing
-        newSocket.on('user-typing', data => {
-            dispatch(Actions.setUserTyping({ userId: data.userId, input: data.input }))
-        })
-
-        newSocket.on('user-joined', data => {
-            dispatch(Actions.addPlayer(data))
-        })
-
-        newSocket.on('user-left', data => {
-            dispatch(Actions.removePlayer(data))
-        })
-
-        // Handle game won
-        newSocket.on('game-over', data => {
-            dispatch(Actions.setGameOver(data))
-        })
-
-        newSocket.on('game-state-sync', data => {
-            dispatch(Actions.syncGameSessionState(data))
-        })
-
-        return () => {
-            newSocket.close()
-        }
-    }, [showError])
+    useExposeStateForDebugging(state)
+    useSocketConnection({ dispatch })
 
     const sendQuestion = () => {
         if (state.socket && state.questionInput.trim()) {
@@ -144,13 +71,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             value={{ state, sendQuestion, startNewRound, giveUp, updateQuestionInput }}
         >
             {children}
-            {toasts.map(toast => (
-                <ErrorToast
-                    key={toast.id}
-                    message={toast.message}
-                    onClose={() => removeToast(toast.id)}
-                />
-            ))}
         </AppContext.Provider>
     )
 }

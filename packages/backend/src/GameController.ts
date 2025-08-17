@@ -1,8 +1,8 @@
 import type { Server } from 'socket.io'
 import type { ClientToServerEvents, GameSessionState, ServerToClientEvents } from 'shared'
-import { WordGameAI } from '../services/WordGameAI'
-import { GameSessionsManager } from '../services/GameSessionsManager'
-import { GameSocket } from '../types'
+import { WordGameAI } from './services/WordGameAI'
+import { GameSessionsManager } from './services/GameSessionsManager'
+import { GameSocket } from './types'
 
 export class GameController {
     constructor(
@@ -127,6 +127,7 @@ export class GameController {
             question,
             userId: socket.id!
         })
+        this.gameSessions.updateUserTyping(roomId, socket.id!, '')
         this.io.to(roomId).emit('question-updated', {
             id: questionId,
             question: question,
