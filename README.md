@@ -40,6 +40,7 @@ docker-compose up
 ## 🛠️ Tech Stack
 
 ### TODO
+- Switch to API-based AI, add secrets management
 - Yjs collaboration with WebSocket
 - MCP API
 - Code splitting & lazy loading
