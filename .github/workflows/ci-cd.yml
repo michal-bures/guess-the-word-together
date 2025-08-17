@@ -189,7 +189,7 @@ jobs:
     if: ${{ always() }}
 
     steps:
-      - id: check
+      - id: check upstream jobs
         run: |
           if [[ "${{ needs.build-image.result }}" == "success" && "${{ needs.check-tests.result }}" == "success" ]]; then
             echo "✅ Test and build succeeeded, triggering deploy"

@@ -38,7 +38,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }, []) // Empty dependency array - only runs once
 
     useEffect(() => {
-        const newSocket: TypedSocket = io('http://localhost:3001')
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || window.location.origin
+        const newSocket: TypedSocket = io(backendUrl)
         dispatch(Actions.setSocket(newSocket))
 
         newSocket.on('connect', () => {

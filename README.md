@@ -5,6 +5,8 @@ A playground for a bunch of tech used for developing react SPA featuring real-ti
 A collaborative multiplayer word guessing game where players work together to guess a secret word chosen by AI.
 Players can see each other typing in real-time and ask yes/no questions to narrow down the possibilities.
 
+Try it at https://guess-the-word-together.onrender.com/
+
 ## Running locally
 
 Requires:
@@ -91,7 +93,8 @@ Dependency management:
   - this also makes bun use a single central `node_modules` folder for all packages
 
 CI pipeline:
-- Building a single unified image for both frontend and backend
+- App is built as a single Docker image running bun, which serves both frontend and backend
+- For maximum speed, checks and build runs in parallel, deploy is triggered if everything passes
 - TODO: for better scaling & availability, static assets could be uploaded to CDN and served from there instead of the backend container
 
 Static typing:
