@@ -41,6 +41,9 @@ COPY --from=build /usr/src/app/packages/backend/dist packages/backend/dist
 COPY --from=build /usr/src/app/packages/frontend/dist packages/frontend/dist
 COPY --from=build /usr/src/app/packages/shared/dist packages/shared/dist
 
+# Copy runtime data files
+COPY --from=build /usr/src/app/packages/backend/data packages/backend/data
+
 # Create non-root user for security
 USER bun
 
