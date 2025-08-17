@@ -55,6 +55,9 @@ jobs:
       - name: Format check backend
         run: bun run --filter=backend format:check
         
+      - name: Build shared package
+        run: bun run --filter=shared build
+        
       - name: Type check backend
         run: bun run --filter=backend build
         
@@ -82,6 +85,9 @@ jobs:
         
       - name: Format check frontend
         run: bun run --filter=frontend format:check
+        
+      - name: Build shared package
+        run: bun run --filter=shared build
         
       - name: Type check frontend
         run: bun run --filter=frontend build
