@@ -19,7 +19,6 @@ a secret word chosen by AI. Players can see each other typing in real-time and a
 Dependency management:
 - Using buns `catalog` to unify dev dependency versions (such as typescript) across all packages 
 - Using `linkWorkspacePackages = true` to symlink local packages in monorepo to speedup and simplify development
-  - this also makes bun use a single central `node_modules` folder for all packages
 
 CI pipeline:
 ![pipeline.png](docs/img/pipeline.png)
