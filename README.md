@@ -80,8 +80,6 @@ Libraries and frameworks:
   - why socket.io:
     - mature ecosystem with many features out of the box
     - supports fallbacks to long-polling
-    - easy to use with Yjs for real-time collaboration
-- **[Yjs](https://docs.yjs.dev/)** for real-time collaborative features
 - **[Tailwind](https://tailwindcss.com/)** for styling
   - alternatives: styled-components, emotion, CSS modules
   - why Tailwind:
