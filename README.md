@@ -23,7 +23,7 @@ Dependency management:
 CI pipeline:
 ![pipeline.png](docs/img/pipeline.png)
 
-- App is built as a single Docker image running a Koa server on Bun, which serves both frontend and backend
+- App is built as a single Docker image running a Koa server on Bun, which serves both frontend assets and backend API
 - Fast package installation, build and tests thanks to the Bun + Vite + Vitest combo
 - For maximum speed, checks and build runs in parallel, deploy is triggered if everything passes
 - Note: For better scaling & availability, static assets could be uploaded to CDN and served from there instead 
